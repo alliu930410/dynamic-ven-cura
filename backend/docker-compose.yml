@@ -1,0 +1,29 @@
+version: '3'
+services:
+  db_local:
+    image: postgres:17-alpine
+    restart: always
+    container_name: ven_cura_local
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=ven_cura
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    command: ['postgres', '-c', 'log_statement=all']
+
+  db_test:
+    image: postgres:17-alpine
+    restart: always
+    container_name: ven_cura_test
+    ports:
+      - '5433:5433'
+    environment:
+      - POSTGRES_DB=ven_cura
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
+    command: ['postgres', '-c', 'log_statement=all']
