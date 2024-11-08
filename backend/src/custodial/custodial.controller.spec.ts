@@ -118,10 +118,10 @@ describe('CustodialController', () => {
     });
   });
 
-  describe('POST /custodial/wallets', () => {
+  describe('POST /custodial/wallet', () => {
     it('should return 401 Unauthorized error if accessToken is missing', async () => {
       const res = await request(app.getHttpServer())
-        .post(`/custodial/wallets`)
+        .post(`/custodial/wallet`)
         .expect(401);
 
       expect(res.body).toMatchInlineSnapshot(`
@@ -149,7 +149,7 @@ describe('CustodialController', () => {
       expect(userBefore).toBeNull();
 
       const res = await request(app.getHttpServer())
-        .post(`/custodial/wallets`)
+        .post(`/custodial/wallet`)
         .set('Authorization', `Bearer ${token}`)
         .expect(201);
 
@@ -200,7 +200,7 @@ describe('CustodialController', () => {
       expect(userBefore.custodialWallets).toHaveLength(0);
 
       const res = await request(app.getHttpServer())
-        .post(`/custodial/wallets`)
+        .post(`/custodial/wallet`)
         .set('Authorization', `Bearer ${token}`)
         .expect(201);
 

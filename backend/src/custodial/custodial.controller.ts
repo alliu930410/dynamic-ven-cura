@@ -27,7 +27,7 @@ export class CustodialController {
     return this.custodialService.getWallets(dynamicUserId);
   }
 
-  @Post('wallets')
+  @Post('wallet')
   @UseGuards(JwtAuthGuard)
   @ApiCreatedResponse({
     description: 'Creates a new custodial wallet for the authenticated user',
