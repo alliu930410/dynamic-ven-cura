@@ -1,6 +1,6 @@
 "use client"; // Add this line at the top
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   DynamicContextProvider,
   DynamicWidget,
@@ -11,8 +11,10 @@ import {
   useDynamicToken,
   DynamicTokenProvider,
 } from "@/context/DynamicTokenContext";
+import FetchUserCustodialWalletsComponent from "@/components/FetchUserCustodialWallets";
 
 const DynamicApp = () => {
+  const [item, setItem] = useState(null);
   const { token, setToken } = useDynamicToken();
 
   useEffect(() => {
@@ -36,6 +38,11 @@ const DynamicApp = () => {
     >
       <DynamicWidget />
       {`Token: ${token}`}
+      <h1>
+        Custodial Wallets:{" "}
+        {item ? JSON.stringify(item) : "Haven't fetched any yet"}
+      </h1>
+      <FetchUserCustodialWalletsComponent setItem={setItem} />
     </DynamicContextProvider>
   );
 };
