@@ -118,8 +118,7 @@ export class CustodialController {
     @Req() req: AuthenticatedDynamicUserDto,
     @Body() sendTransactionDto: SendTransactionDto,
   ) {
-    // const { dynamicUserId } = req.user;
-    const dynamicUserId = 'aaa';
+    const { dynamicUserId } = req.user;
     const { chainId, address, to, amountInEth } = sendTransactionDto;
     return this.custodialService.sendTransaction(
       dynamicUserId,
