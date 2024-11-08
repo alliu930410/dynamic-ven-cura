@@ -13,6 +13,7 @@ import {
   DynamicTokenProvider,
 } from "@/context/DynamicTokenContext";
 import FetchUserCustodialWalletsComponent from "@/components/FetchUserCustodialWallets";
+import CreateCustodialWalletComponent from "@/components/CreateUserCustodialWallet";
 
 const DynamicApp = () => {
   const [custodialWallets, setCustodialWallets] = useState([]);
@@ -31,8 +32,8 @@ const DynamicApp = () => {
   }, [setToken]);
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full space-y-6">
+    <div className="bg-white text-black min-h-screen flex items-center justify-center p-4">
+      <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-lg max-w-lg w-full space-y-6">
         <DynamicContextProvider
           settings={{
             environmentId: "e95369b8-4e91-43f6-b483-dac1a163b57e",
@@ -46,7 +47,12 @@ const DynamicApp = () => {
               ? JSON.stringify(custodialWallets)
               : "Haven't fetched any yet"}
           </h1>
-          <FetchUserCustodialWalletsComponent setItems={setCustodialWallets} />
+          {custodialWallets.length === 0 && (
+            <FetchUserCustodialWalletsComponent
+              setItems={setCustodialWallets}
+            />
+          )}
+          <CreateCustodialWalletComponent />
         </DynamicContextProvider>
       </div>
     </div>
