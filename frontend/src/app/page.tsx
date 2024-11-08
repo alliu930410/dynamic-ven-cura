@@ -42,6 +42,9 @@ const DynamicApp = () => {
 
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNetwork(event.target.value);
+
+    console.log("--val", event.target.value);
+
     setChainId(chainNameToId[event.target.value]);
   };
 
@@ -58,15 +61,15 @@ const DynamicApp = () => {
         </DynamicContextProvider>
         {/* Network Toggle Section */}
         <div className="flex items-center">
-          <h2 className="text-lg font-bold">Network: </h2>
+          <h2 className="text-lg font-bold">{`Network(id: ${chainId})`}: </h2>
           <select
             id="network-select"
             value={network}
             onChange={handleNetworkChange}
             className="border border-gray-300 rounded-md p-2"
           >
-            <option value="Sepolia">{sepolia.name}</option>
-            <option value="Mainnet">{baseSepolia.name}</option>
+            <option value={sepolia.name}>{sepolia.name}</option>
+            <option value={baseSepolia.name}>{baseSepolia.name}</option>
           </select>
         </div>
         {/* Admin panel section */}
