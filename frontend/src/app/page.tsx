@@ -1,26 +1,31 @@
 "use client"; // Add this line at the top
 
+import React, { useEffect } from "react";
 import {
   DynamicContextProvider,
   DynamicWidget,
   getAuthToken,
 } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
-import { useEffect, useState } from "react";
+import {
+  useDynamicToken,
+  DynamicTokenProvider,
+} from "@/context/DynamicTokenContext";
 
-const App = () => {
-  const [token, setToken] = useState<string | null>(null);
+const DynamicApp = () => {
+  const { token, setToken } = useDynamicToken();
 
   useEffect(() => {
     const fetchToken = async () => {
-      const jwtToken = await getAuthToken();
+      const jwtToken = getAuthToken();
       if (jwtToken) {
+        // Set global token with Dynamic jwt token
         setToken(jwtToken);
       }
     };
 
     fetchToken();
-  }, []);
+  }, [setToken]);
 
   return (
     <DynamicContextProvider
@@ -30,9 +35,15 @@ const App = () => {
       }}
     >
       <DynamicWidget />
-      {token && <p>JWT Token: {token}</p>}
+      {`Token: ${token}`}
     </DynamicContextProvider>
   );
 };
+
+const App = () => (
+  <DynamicTokenProvider>
+    <DynamicApp />
+  </DynamicTokenProvider>
+);
 
 export default App;
