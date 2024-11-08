@@ -1,4 +1,4 @@
-"use client"; // Add this line at the top
+"use client";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -14,7 +14,7 @@ import {
 import FetchUserCustodialWalletsComponent from "@/components/FetchUserCustodialWallets";
 
 const DynamicApp = () => {
-  const [item, setItem] = useState(null);
+  const [custodialWallets, setCustodialWallets] = useState([]);
   const { token, setToken } = useDynamicToken();
 
   useEffect(() => {
@@ -30,20 +30,25 @@ const DynamicApp = () => {
   }, [setToken]);
 
   return (
-    <DynamicContextProvider
-      settings={{
-        environmentId: "e95369b8-4e91-43f6-b483-dac1a163b57e",
-        walletConnectors: [EthereumWalletConnectors],
-      }}
-    >
-      <DynamicWidget />
-      {`Token: ${token}`}
-      <h1>
-        Custodial Wallets:{" "}
-        {item ? JSON.stringify(item) : "Haven't fetched any yet"}
-      </h1>
-      <FetchUserCustodialWalletsComponent setItem={setItem} />
-    </DynamicContextProvider>
+    <div className="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-w-lg w-full space-y-6">
+        <DynamicContextProvider
+          settings={{
+            environmentId: "e95369b8-4e91-43f6-b483-dac1a163b57e",
+            walletConnectors: [EthereumWalletConnectors],
+          }}
+        >
+          <DynamicWidget />
+          <h1>
+            Custodial Wallets:{" "}
+            {custodialWallets
+              ? JSON.stringify(custodialWallets)
+              : "Haven't fetched any yet"}
+          </h1>
+          <FetchUserCustodialWalletsComponent setItems={setCustodialWallets} />
+        </DynamicContextProvider>
+      </div>
+    </div>
   );
 };
 

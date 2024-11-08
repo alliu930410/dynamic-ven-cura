@@ -1,18 +1,18 @@
 import { useAuthenticatedApiClient } from "@/services/apiClient";
 
 interface FetchUserCustodialWalletsProps {
-  setItem: (item: any) => void;
+  setItems: (item: any) => void;
 }
 
 const FetchUserCustodialWalletsComponent: React.FC<
   FetchUserCustodialWalletsProps
-> = ({ setItem }) => {
+> = ({ setItems }) => {
   const apiClient = useAuthenticatedApiClient();
 
   const handleFetchUserCustodialWallets = async () => {
     try {
       const response = await apiClient.get("/custodial/wallets");
-      setItem(response.data);
+      setItems(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
