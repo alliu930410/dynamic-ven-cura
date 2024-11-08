@@ -84,4 +84,9 @@ export class CustodialService {
       publicKey,
     };
   }
+
+  async getBalance(address: string, chainId: number): Promise<number> {
+    // TODO: implement
+    return 0;
+  }
 }
