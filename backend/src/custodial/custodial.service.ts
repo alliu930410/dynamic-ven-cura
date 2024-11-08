@@ -5,7 +5,7 @@ import {
   CreateCustodialWalletDto,
   GetBalanceDto,
   GetCustodialWalletsDto,
-  SignMessageDto,
+  SignedMessageDto,
 } from './custodial.dto';
 import { generateKey } from 'src/utils/keygen';
 import { decryptKey, encryptKey } from 'src/utils/crypto';
@@ -109,7 +109,7 @@ export class CustodialService {
     dynamicUserId: string,
     address: string,
     message: string,
-  ): Promise<SignMessageDto> {
+  ): Promise<SignedMessageDto> {
     const wallet = await this.getSigningWallet(dynamicUserId, address);
     const signature = await wallet.signMessage(message);
 
@@ -128,7 +128,7 @@ export class CustodialService {
       },
     });
 
-    return { address, signature };
+    return { address, message, signature };
   }
 
   private async getSigningWallet(

@@ -287,4 +287,19 @@ describe('CustodialController', () => {
 `);
     });
   });
+
+  describe('POST /custodial/wallet/signMessage', () => {
+    it('should return 401 Unauthorized error if accessToken is missing', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/signMessage`)
+        .expect(401);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "message": "Unauthorized",
+  "statusCode": 401,
+}
+`);
+    });
+  });
 });
