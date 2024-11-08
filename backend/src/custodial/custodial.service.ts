@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { pick } from 'lodash';
-import { GetCustodialWalletsDto } from './custodial.dto';
+import {
+  CreateCustodialWalletDto,
+  GetCustodialWalletsDto,
+} from './custodial.dto';
 import { generateKey } from 'src/utils/keygen';
 import { encryptKey } from 'src/utils/crypto';
 
@@ -26,7 +29,7 @@ export class CustodialService {
     );
   }
 
-  async createWallet(dynamicUserId: string): Promise<GetCustodialWalletsDto> {
+  async createWallet(dynamicUserId: string): Promise<CreateCustodialWalletDto> {
     // Generate a new key pair
     const { address, publicKey, privateKey } = generateKey();
 
@@ -79,7 +82,6 @@ export class CustodialService {
       address,
       nickName,
       publicKey,
-      createdAt: new Date(),
     };
   }
 }

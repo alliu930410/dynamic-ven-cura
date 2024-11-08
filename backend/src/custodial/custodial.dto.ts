@@ -17,3 +17,20 @@ export class GetCustodialWalletsDto
   @ApiProperty()
   createdAt: Date;
 }
+
+export class CreateCustodialWalletDto
+  implements
+    Omit<
+      CustodialWallet,
+      'id' | 'privateKey' | 'privateKeyVI' | 'userId' | 'createdAt'
+    >
+{
+  @ApiProperty()
+  address: string;
+
+  @ApiProperty()
+  nickName: string | null;
+
+  @ApiProperty()
+  publicKey: string;
+}
