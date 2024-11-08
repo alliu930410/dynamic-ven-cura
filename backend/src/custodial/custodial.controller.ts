@@ -80,7 +80,7 @@ export class CustodialController {
     return this.custodialService.getBalance(chainId, address);
   }
 
-  @Post('/signMessage')
+  @Post('/wallet/signMessage')
   @UseGuards(JwtAuthGuard)
   @ApiBody({
     required: true,
