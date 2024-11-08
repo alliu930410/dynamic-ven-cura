@@ -33,6 +33,7 @@ model CustodialWallet {
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   messageHistory MessageHistory[]
+  transactionHistory TransactionHistory[]
 
   createdAt     DateTime          @default(now())
 }
@@ -43,6 +44,22 @@ model MessageHistory {
   message String
   signature String
   signatureIV String
+
+  custodialWalletId Int
+  custodialWallet CustodialWallet @relation(fields: [custodialWalletId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime          @default(now())
+}
+
+model TransactionHistory {
+  id Int @id @default(autoincrement())
+
+  chainId Int
+  transactionHash String @unique
+  nonce Int
+
+  toAddress String
+  amountInEth Decimal
 
   custodialWalletId Int
   custodialWallet CustodialWallet @relation(fields: [custodialWalletId], references: [id], onDelete: Cascade)

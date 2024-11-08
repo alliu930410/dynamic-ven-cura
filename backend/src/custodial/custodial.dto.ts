@@ -61,3 +61,37 @@ export class SignMessageDto {
   @ApiProperty()
   message: string;
 }
+
+export class SendTransactionDto {
+  @ApiProperty()
+  chainId: number;
+
+  @ApiProperty()
+  address: string;
+
+  @ApiProperty()
+  to: string;
+
+  @ApiProperty()
+  amountInEth: number;
+}
+
+export class SendTransactionReceiptDto {
+  @ApiProperty()
+  chainId: number;
+
+  @ApiProperty()
+  address: string;
+
+  @ApiProperty()
+  to: string;
+
+  @ApiProperty()
+  amountInEth: number;
+
+  @ApiProperty()
+  transactionHash: string;
+
+  @ApiProperty()
+  nonce: number;
+}

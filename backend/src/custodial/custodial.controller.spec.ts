@@ -7,6 +7,8 @@ import * as jwt from 'jsonwebtoken';
 import { ethers, isAddress } from 'ethers';
 import { Alchemy, BigNumber } from 'alchemy-sdk';
 import { polygon, sepolia } from 'viem/chains';
+import { EVMService } from 'src/evm/evm.service';
+import { Prisma } from '@prisma/client';
 
 // Mock Alchemy SDK
 jest.mock('alchemy-sdk');
@@ -23,6 +25,7 @@ const generateJwtToken = (payload: any): string => {
 describe('CustodialController', () => {
   let app: INestApplication;
   let prismaService: PrismaService;
+  let evmService: EVMService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -33,16 +36,19 @@ describe('CustodialController', () => {
     await app.init();
 
     prismaService = app.get<PrismaService>(PrismaService);
+    evmService = app.get<EVMService>(EVMService);
   });
 
   afterEach(async () => {
     // Cleanup database after each test
+    await prismaService.messageHistory.deleteMany();
+    await prismaService.transactionHistory.deleteMany();
     await prismaService.custodialWallet.deleteMany();
     await prismaService.user.deleteMany();
   });
 
   describe('GET /custodial/wallets', () => {
-    it('should return 401 Unauthorized error if accessToken is missing', async () => {
+    it('should return 401 Unauthorized error if jwt token is missing', async () => {
       const res = await request(app.getHttpServer())
         .get(`/custodial/wallets`)
         .expect(401);
@@ -126,7 +132,7 @@ describe('CustodialController', () => {
   });
 
   describe('POST /custodial/wallet', () => {
-    it('should return 401 Unauthorized error if accessToken is missing', async () => {
+    it('should return 401 Unauthorized error if jwt token is missing', async () => {
       const res = await request(app.getHttpServer())
         .post(`/custodial/wallet`)
         .expect(401);
@@ -289,7 +295,7 @@ describe('CustodialController', () => {
   });
 
   describe('POST /custodial/wallet/signMessage', () => {
-    it('should return 401 Unauthorized error if accessToken is missing', async () => {
+    it('should return 401 Unauthorized error if jwt token is missing', async () => {
       const res = await request(app.getHttpServer())
         .post(`/custodial/wallet/signMessage`)
         .expect(401);
@@ -302,7 +308,7 @@ describe('CustodialController', () => {
 `);
     });
 
-    it("should return 400 Not Found error if wallet doesn't exist", async () => {
+    it("should return 404 Not Found error if wallet doesn't exist", async () => {
       // Prep: generate a token that resolves to a user with no custodial wallets
       const token = generateJwtToken({
         sub: 'user-with-no-custodial-wallets',
@@ -365,6 +371,112 @@ describe('CustodialController', () => {
       expect(messageHistories).toHaveLength(1);
       expect(messageHistories[0].signature === testMessage).toBe(false);
       expect(messageHistories[0].signatureIV).toBeDefined();
+    });
+  });
+
+  describe('POST /custodial/wallet/sendTransaction', () => {
+    let mockDynamicUserId: string = 'existing-user';
+    let mockCustodialWalletAddress: string;
+    let token: string;
+
+    beforeEach(async () => {
+      // Mock evmService.sendTransaction to return a valid transaction response
+      jest.spyOn(evmService, 'sendTransaction').mockResolvedValue({
+        transactionHash: '0xTRANSACTION',
+        nonce: 1,
+      });
+
+      // Prep: generate a token that resolves to a user with a custodial wallet
+      token = generateJwtToken({
+        sub: mockDynamicUserId,
+      });
+
+      // Prep: create the user with a custodial wallet in
+      const resWalletCreation = await request(app.getHttpServer())
+        .post(`/custodial/wallet`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(201);
+      mockCustodialWalletAddress = resWalletCreation.body.address;
+    });
+
+    it('should return 401 Unauthorized error if jwt token is missing', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/wallet/sendTransaction`)
+        .send({
+          address: mockDynamicUserId,
+          to: mockCustodialWalletAddress,
+          amountInEth: 0.01,
+          chainId: sepolia.id,
+        })
+        .expect(401);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "message": "Unauthorized",
+  "statusCode": 401,
+}
+`);
+    });
+
+    it("should return 404 Not Found error if wallet doesn't exist", async () => {
+      // Prep: generate a token that resolves to a user with no custodial wallets
+      const token = generateJwtToken({
+        sub: 'user-with-no-custodial-wallets',
+      });
+
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/wallet/sendTransaction`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          address: '0xINVALID',
+          to: mockCustodialWalletAddress,
+          amountInEth: 0.01,
+          chainId: sepolia.id,
+        })
+        .expect(404);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "error": "Wallet not found",
+  "message": "Wallet with address 0xINVALID not found",
+}
+`);
+    });
+
+    it('should throw 400 Bad Request error if chainId is not supported', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/wallet/sendTransaction`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          address: mockCustodialWalletAddress,
+          to: mockCustodialWalletAddress,
+          amountInEth: 0.01,
+          chainId: polygon.id,
+        })
+        .expect(400);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "error": "Invalid chain ID",
+  "message": "Chain ID 137 is not supported",
+}
+`);
+    });
+
+    it('should return 201 for successfully sending a transaction', async () => {
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/wallet/sendTransaction`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          address: mockCustodialWalletAddress,
+          to: mockCustodialWalletAddress,
+          amountInEth: 0.01,
+          chainId: sepolia.id,
+        })
+        .expect(201);
+
+      expect(res.body).toHaveProperty('transactionHash', '0xTRANSACTION');
+      expect(res.body).toHaveProperty('nonce', 1);
     });
   });
 });

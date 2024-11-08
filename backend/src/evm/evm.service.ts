@@ -12,6 +12,7 @@ export enum SUPPORTED_CHAIN_IDS {
 @Injectable()
 export class EVMService {
   alchemyClients: Record<number, Alchemy>;
+  chainIdToProviderUrl: Record<number, string>;
 
   constructor() {
     this.alchemyClients = {
@@ -23,6 +24,11 @@ export class EVMService {
         apiKey: process.env.ALCHEMY_API_KEY_BE,
         network: Network.BASE_SEPOLIA,
       }),
+    };
+
+    this.chainIdToProviderUrl = {
+      [sepolia.id]: `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
+      [baseSepolia.id]: `https://base-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_BE}`,
     };
   }
 
@@ -37,4 +43,49 @@ export class EVMService {
 
     return balanceInEther;
   }
+
+  /**
+   * Send a transaction to the EVM
+   * @param signerWallet authenticated wallet with chain provider that is sending the transaction
+   * @param to recipient address
+   * @param amountInEth amount to send in ETH
+   * @returns transaction hash of the submitted transaction
+   */
+  async sendTransaction(
+    signerWallet: ethers.Wallet,
+    to: string,
+    amountInEth: number,
+  ): Promise<{
+    transactionHash: string;
+    nonce: number;
+  }> {
+    const tx = await signerWallet.sendTransaction({
+      to,
+      value: ethers.parseEther(amountInEth.toString()),
+    });
+
+    return { transactionHash: tx.hash, nonce: tx.nonce };
+  }
+
+  /**
+   * Gets Alchemy provider for a given chain id
+   * @param chainId
+   */
+  async getProviderForChainId(
+    chainId: number,
+  ): Promise<ethers.JsonRpcProvider> {
+    const providerUrl = this.chainIdToProviderUrl[chainId];
+    if (!providerUrl) {
+      throw new InvalidChainIdException(chainId);
+    }
+
+    return new ethers.JsonRpcProvider(providerUrl);
+  }
+
+  /**
+   * Retrieves the transaction receipt for a given transaction hash
+   * @param txHash transaction hash
+   * TODO: implement
+   */
+  async getTransactionReceipt(txHash: string): Promise<any> {}
 }
