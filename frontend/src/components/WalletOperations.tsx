@@ -30,28 +30,68 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
         <img
           src="/icons/key.svg"
           alt="key"
-          className="w-6 h-6 cursor-pointer group-hover:fill-red"
+          className="w-6 h-6 cursor-pointer"
         />
-        <div className="tooltip hidden group-hover:block absolute z-10 w-48 p-2 text-sm text-white bg-black bg-opacity-80 rounded-md">
-          You will reveal the private key of this wallet by pressing, and it's
-          not safe if it's leaked.
-        </div>
+      </div>
+    );
+  };
+
+  const SignMessageComponent = () => {
+    const handleSignMessage = (message: string) => {
+      // TODO: hit API to sign the message
+      toast.error("Haven't implemented yet");
+    };
+
+    return (
+      <div
+        className="relative group"
+        onClick={() => handleSignMessage("Placeholder Message")}
+      >
+        <img
+          src="/icons/sign.svg"
+          alt="sign"
+          className="w-6 h-6 cursor-pointer"
+        />
+      </div>
+    );
+  };
+
+  const SignTransactionComponent = () => {
+    const handleSignTransaction = (to: string, amount: number) => {
+      // TODO: hit API to sign the transaction
+      toast.error("Haven't implemented yet");
+    };
+
+    return (
+      <div
+        className="relative group"
+        onClick={() => handleSignTransaction("0x123", 0.1)}
+      >
+        <img
+          src="/icons/transaction.svg"
+          alt="sign"
+          className="w-6 h-6 cursor-pointer"
+        />
       </div>
     );
   };
 
   return (
     <div className="bg-gray-100 border border-gray-300 p-4 rounded-lg shadow-lg w-1/4 ml-6 space-y-4">
-      <div className="p-2">
+      <div className="flex p-2 justify-between">
+        <SignMessageComponent />
+        <SignTransactionComponent />
         <SelfCustodialComponent />
       </div>
 
-      <div className="flex-grow flex">
-        <WalletTransactionHistory
-          chainId={chainId}
-          selectedWallet={selectedWallet}
-        />
-      </div>
+      {activeOperation === "history" && (
+        <div className="flex-grow flex">
+          <WalletTransactionHistory
+            chainId={chainId}
+            selectedWallet={selectedWallet}
+          />
+        </div>
+      )}
     </div>
   );
 };

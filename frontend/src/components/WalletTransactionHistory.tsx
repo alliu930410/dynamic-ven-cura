@@ -19,9 +19,8 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
 
   return (
     <div className="w-full h-full">
-      <h3 className="text-lg font-bold">
-        Transaction History for {selectedWallet.nickName}
-      </h3>
+      <h3 className="text-lg font-bold">Transaction History for</h3>
+      <h3 className="text-lg font-bold">{selectedWallet.nickName}</h3>
       {transactionHistory.length > 0 ? (
         <ul>
           {transactionHistory.map((transaction, index) => (
