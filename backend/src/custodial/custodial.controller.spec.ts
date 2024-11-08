@@ -291,7 +291,7 @@ describe('CustodialController', () => {
   describe('POST /custodial/wallet/signMessage', () => {
     it('should return 401 Unauthorized error if accessToken is missing', async () => {
       const res = await request(app.getHttpServer())
-        .post(`/custodial/signMessage`)
+        .post(`/custodial/wallet/signMessage`)
         .expect(401);
 
       expect(res.body).toMatchInlineSnapshot(`
@@ -309,7 +309,7 @@ describe('CustodialController', () => {
       });
 
       const res = await request(app.getHttpServer())
-        .post(`/custodial/signMessage`)
+        .post(`/custodial/wallet/signMessage`)
         .set('Authorization', `Bearer ${token}`)
         .send({
           address: '0x123',
@@ -341,7 +341,7 @@ describe('CustodialController', () => {
 
       const testMessage = '0x12345abcde';
       const res = await request(app.getHttpServer())
-        .post(`/custodial/signMessage`)
+        .post(`/custodial/wallet/signMessage`)
         .set('Authorization', `Bearer ${token}`)
         .send({
           address,
