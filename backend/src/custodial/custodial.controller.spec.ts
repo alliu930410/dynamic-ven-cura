@@ -4,7 +4,14 @@ import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import { AppModule } from 'src/app.module';
 import * as jwt from 'jsonwebtoken';
-import { isAddress } from 'ethers';
+import { ethers, isAddress } from 'ethers';
+import { Alchemy, BigNumber } from 'alchemy-sdk';
+import { polygon, sepolia } from 'viem/chains';
+
+// Mock Alchemy SDK
+jest.mock('alchemy-sdk');
+const alchemyClient: any = {};
+Alchemy['mockImplementation'](() => alchemyClient);
 
 // Helper function to generate jwt token with the given payload
 const generateJwtToken = (payload: any): string => {
@@ -221,6 +228,63 @@ describe('CustodialController', () => {
 
       expect(userAfter).toBeDefined();
       expect(userAfter.custodialWallets).toHaveLength(1);
+    });
+  });
+
+  describe('GET /custodial/wallet/balance/:chainId/:address', () => {
+    const mockWalletAddress = '0x0000000000000000000000000000000000000000';
+
+    it('should return 400 Bad Request error if chain id is not supported yet', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/balance/${polygon.id}/${mockWalletAddress}`)
+        .expect(400);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "error": "Invalid chain ID",
+  "message": "Chain ID 137 is not supported",
+}
+`);
+    });
+
+    it('should return 200 OK with balance if chain id is supported (wallet has balance)', async () => {
+      // Prep: mock Alchemy client to return BigNumber balance of 1 ETH
+      const mockBalance = ethers.parseEther('1.0'); // 1 ETH in wei
+      alchemyClient.core = {
+        // Note: the payload is from Base Sepolia (chainId 84532) for contract `0xdD6268182666eb07929b5BBD8f1f43c65532AcC0`
+        getBalance: jest.fn().mockResolvedValue(mockBalance),
+      };
+
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/balance/${sepolia.id}/${mockWalletAddress}`)
+        .expect(200);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "address": "0x0000000000000000000000000000000000000000",
+  "balance": "1.0",
+}
+`);
+    });
+
+    it('should return 200 OK with balance if chain id is supported (wallet does not have balance)', async () => {
+      // Prep: mock Alchemy client to return BigNumber balance of 0
+      const mockBalance = ethers.parseEther('0.0');
+      alchemyClient.core = {
+        // Note: the payload is from Base Sepolia (chainId 84532) for contract `0xdD6268182666eb07929b5BBD8f1f43c65532AcC0`
+        getBalance: jest.fn().mockResolvedValue(mockBalance),
+      };
+
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/balance/${sepolia.id}/${mockWalletAddress}`)
+        .expect(200);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "address": "0x0000000000000000000000000000000000000000",
+  "balance": "0.0",
+}
+`);
     });
   });
 });
