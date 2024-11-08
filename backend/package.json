@@ -23,7 +23,7 @@
     "docker:test:down": "docker compose down db_test",
     "prisma:generate": "npx prisma generate --schema=./prisma/schema.prisma",
     "migrate:dev": "dotenv -e .env.dev npx prisma migrate dev",
-    "test": "dotenv -e .env.test -- yarn docker:test:up && yarn prisma:generate && dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand"
+    "test": "NODE_ENV=test dotenv -e .env.test -- yarn docker:test:up && yarn prisma:generate && dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -64,7 +64,7 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": "./",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
@@ -73,6 +73,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "setupFiles": [
+      "<rootDir>/test/setup-jest.ts"
+    ]
   }
 }
