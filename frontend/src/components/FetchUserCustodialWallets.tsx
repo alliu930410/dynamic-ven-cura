@@ -11,7 +11,7 @@ const FetchUserCustodialWalletsComponent: React.FC<
 
   const handleFetchUserCustodialWallets = async () => {
     try {
-      const response = await apiClient.get("/custodial-wallets");
+      const response = await apiClient.get("/custodial/wallets");
       setItem(response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
