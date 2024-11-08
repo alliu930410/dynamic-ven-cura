@@ -17,7 +17,7 @@ import FetchUserCustodialWalletsComponent from "@/components/FetchUserCustodialW
 import CreateCustodialWalletComponent from "@/components/CreateUserCustodialWallet";
 import CustodialWalletItem from "@/components/CustodialWalletItem";
 import { baseSepolia, sepolia } from "viem/chains";
-import WalletTransactionHistory from "@/components/WalletTransactionHistory";
+import WalletOperations from "@/components/WalletOperations";
 
 const DynamicApp = () => {
   const [custodialWallets, setCustodialWallets]: any[] = useState([]);
@@ -101,10 +101,7 @@ const DynamicApp = () => {
 
       {/* Expandable Panel for Wallet-Specific Operations */}
       {selectedWallet && (
-        <WalletTransactionHistory
-          chainId={chainId}
-          selectedWallet={selectedWallet}
-        />
+        <WalletOperations chainId={chainId} selectedWallet={selectedWallet} />
       )}
     </div>
   );

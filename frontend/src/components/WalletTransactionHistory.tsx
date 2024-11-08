@@ -18,7 +18,7 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
   const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
 
   return (
-    <div className="bg-gray-100 border border-gray-300 p-4 rounded-lg shadow-lg w-1/4 ml-6 space-y-4">
+    <div className="w-full h-full">
       <h3 className="text-lg font-bold">
         Transaction History for {selectedWallet.nickName}
       </h3>
