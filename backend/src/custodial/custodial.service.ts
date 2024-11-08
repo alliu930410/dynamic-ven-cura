@@ -113,6 +113,21 @@ export class CustodialService {
     const wallet = await this.getSigningWallet(dynamicUserId, address);
     const signature = await wallet.signMessage(message);
 
+    // Encode the signature to be stored in the database
+    const { encryptedKey, iv } = encryptKey(signature);
+    await this.prismaService.messageHistory.create({
+      data: {
+        message,
+        signature: encryptedKey,
+        signatureVI: iv,
+        custodialWallet: {
+          connect: {
+            address,
+          },
+        },
+      },
+    });
+
     return { address, signature };
   }
 

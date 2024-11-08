@@ -32,5 +32,20 @@ model CustodialWallet {
   userId Int?
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  messageHistory MessageHistory[]
+
+  createdAt     DateTime          @default(now())
+}
+
+
+model MessageHistory {
+  id Int @id @default(autoincrement())
+  message String
+  signature String
+  signatureVI String
+
+  custodialWalletId Int
+  custodialWallet CustodialWallet @relation(fields: [custodialWalletId], references: [id], onDelete: Cascade)
+
   createdAt     DateTime          @default(now())
 }
