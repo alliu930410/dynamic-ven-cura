@@ -18,12 +18,19 @@ export class GetCustodialWalletsDto
   createdAt: Date;
 }
 
-export class DynamicUserDto {
+export class CreateCustodialWalletDto
+  implements
+    Omit<
+      CustodialWallet,
+      'id' | 'privateKey' | 'privateKeyVI' | 'userId' | 'createdAt'
+    >
+{
   @ApiProperty()
-  dynamicUserId: string;
-}
+  address: string;
 
-export class AuthenticatedDynamicUserDto {
-  @ApiProperty({ type: DynamicUserDto })
-  user: DynamicUserDto;
+  @ApiProperty()
+  nickName: string | null;
+
+  @ApiProperty()
+  publicKey: string;
 }
