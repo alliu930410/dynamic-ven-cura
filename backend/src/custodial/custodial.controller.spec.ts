@@ -301,5 +301,70 @@ describe('CustodialController', () => {
 }
 `);
     });
+
+    it("should return 400 Not Found error if wallet doesn't exist", async () => {
+      // Prep: generate a token that resolves to a user with no custodial wallets
+      const token = generateJwtToken({
+        sub: 'user-with-no-custodial-wallets',
+      });
+
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/signMessage`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          address: '0x123',
+          message: 'test_message',
+        })
+        .expect(404);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "error": "Wallet not found",
+  "message": "Wallet with address 0x123 not found",
+}
+`);
+    });
+
+    it('should return 201 Created with signed message if wallet exists', async () => {
+      // Prep: mock jwt token to resolve to the user with the custodial wallet
+      const mockDynamicUserId = 'user-with-custodial-wallet';
+      const token = generateJwtToken({
+        sub: mockDynamicUserId,
+      });
+
+      // Prep: create the user with a custodial wallet in db
+      const resWalletCreation = await request(app.getHttpServer())
+        .post(`/custodial/wallet`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(201);
+      const { address } = resWalletCreation.body;
+
+      const testMessage = '0x12345abcde';
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/signMessage`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          address,
+          message: testMessage,
+        })
+        .expect(201);
+
+      expect(res.body).toHaveProperty('message', testMessage);
+      expect(res.body).toHaveProperty('address', address);
+      expect(res.body.signature).toBeDefined();
+
+      // Sanity check: A message history shall be created in the database, the signed message shall be encoded and stored
+      const messageHistories = await prismaService.messageHistory.findMany({
+        where: {
+          custodialWallet: {
+            address,
+          },
+        },
+      });
+
+      expect(messageHistories).toHaveLength(1);
+      expect(messageHistories[0].signature === testMessage).toBe(false);
+      expect(messageHistories[0].signatureVI).toBeDefined();
+    });
   });
 });
