@@ -1,5 +1,6 @@
 "use client";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -43,8 +44,6 @@ const DynamicApp = () => {
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNetwork(event.target.value);
 
-    console.log("--val", event.target.value);
-
     setChainId(chainNameToId[event.target.value]);
   };
 
@@ -86,6 +85,7 @@ const DynamicApp = () => {
           <CustodialWalletItem
             key={walletItem.address}
             walletItem={walletItem}
+            chainId={chainId}
           />
         ))}
       </div>

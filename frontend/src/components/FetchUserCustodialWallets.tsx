@@ -1,6 +1,6 @@
 import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
 interface FetchUserCustodialWalletsProps {
   setItems: (item: any) => void;
 }
