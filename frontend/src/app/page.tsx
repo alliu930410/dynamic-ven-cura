@@ -23,6 +23,8 @@ const DynamicApp = () => {
   const [network, setNetwork] = useState<string>(sepolia.name);
   const [chainId, setChainId] = useState<number>(sepolia.id);
   const { token, setToken } = useDynamicToken();
+  const [selectedWallet, setSelectedWallet] = useState<any | null>(null);
+  const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
 
   const chainNameToId: Record<string, number> = {
     [sepolia.name]: sepolia.id,
@@ -45,6 +47,12 @@ const DynamicApp = () => {
     setNetwork(event.target.value);
 
     setChainId(chainNameToId[event.target.value]);
+  };
+
+  const handleWalletSelect = (wallet: any) => {
+    setSelectedWallet(wallet);
+    // // Fetch transaction history for the selected wallet
+    // fetchTransactionHistory(wallet.address);
   };
 
   return (
@@ -82,13 +90,36 @@ const DynamicApp = () => {
         <h2 className="text-lg font-bold">Custodial Wallets</h2>
 
         {custodialWallets.map((walletItem: any) => (
-          <CustodialWalletItem
+          <div
             key={walletItem.address}
-            walletItem={walletItem}
-            chainId={chainId}
-          />
+            onClick={() => handleWalletSelect(walletItem)}
+          >
+            <CustodialWalletItem walletItem={walletItem} chainId={chainId} />
+          </div>
         ))}
       </div>
+
+      {/* Expandable Panel for Transaction History */}
+      {selectedWallet && (
+        <div className="bg-gray-100 border border-gray-300 p-4 rounded-lg shadow-lg w-1/4 ml-6 space-y-4">
+          <h3 className="text-lg font-bold">
+            Transaction History for {selectedWallet.nickName}
+          </h3>
+          {transactionHistory.length > 0 ? (
+            <ul>
+              {transactionHistory.map((transaction, index) => (
+                <li key={index}>
+                  <p>Transaction ID: {transaction.id}</p>
+                  <p>Amount: {transaction.amount}</p>
+                  <p>Date: {new Date(transaction.date).toLocaleDateString()}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No transaction history available.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

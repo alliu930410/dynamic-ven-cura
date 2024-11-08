@@ -44,7 +44,7 @@ const CustodialWalletItem: React.FC<CustodialWalletItemProps> = ({
   }, [chainId, address]);
 
   return (
-    <div className="p-4 border border-gray-300 rounded-md shadow-sm bg-white">
+    <div className="p-4 border border-gray-300 rounded-md shadow-sm bg-white cursor-pointer hover:bg-gray-400 transition duration-200">
       <p className="font-semibold">{nickName}</p>
       <p className="font-semibold">{address}</p>
       <p className="font-semibold">
