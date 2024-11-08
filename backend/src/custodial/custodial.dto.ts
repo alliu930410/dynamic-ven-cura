@@ -42,3 +42,11 @@ export class GetBalanceDto {
   @ApiProperty()
   balance: string;
 }
+
+export class SignMessageDto {
+  @ApiProperty()
+  address: string;
+
+  @ApiProperty()
+  signature: string;
+}

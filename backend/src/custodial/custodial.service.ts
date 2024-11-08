@@ -5,10 +5,14 @@ import {
   CreateCustodialWalletDto,
   GetBalanceDto,
   GetCustodialWalletsDto,
+  SignMessageDto,
 } from './custodial.dto';
 import { generateKey } from 'src/utils/keygen';
-import { encryptKey } from 'src/utils/crypto';
+import { decryptKey, encryptKey } from 'src/utils/crypto';
 import { EVMService } from 'src/evm/evm.service';
+import { Prisma } from '@prisma/client';
+import { ethers } from 'ethers';
+import { WalletNotFoundException } from './custodial.exceptions';
 
 @Injectable()
 export class CustodialService {
@@ -91,10 +95,50 @@ export class CustodialService {
   }
 
   async getBalance(chainId: number, address: string): Promise<GetBalanceDto> {
-    const balance = await this.evmService.getBalance(chainId, address);
+    const balance = await this.evmService.getBalance(
+      chainId,
+      address.toLocaleLowerCase(),
+    );
     return {
       address,
       balance,
     };
+  }
+
+  async signMessage(
+    dynamicUserId: string,
+    address: string,
+    message: string,
+  ): Promise<SignMessageDto> {
+    const wallet = await this.getSigningWallet(dynamicUserId, address);
+    const signature = await wallet.signMessage(message);
+
+    return { address, signature };
+  }
+
+  private async getSigningWallet(
+    dynamicUserId: string,
+    address: string,
+  ): Promise<ethers.Wallet> {
+    const wallet = await this.prismaService.custodialWallet.findFirst({
+      where: {
+        user: {
+          dynamicUserId,
+        },
+        address: {
+          equals: address,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+    });
+
+    if (!wallet) {
+      throw new WalletNotFoundException(address);
+    }
+
+    const { privateKey, privateKeyVI } = wallet;
+    const decryptedKey = decryptKey(privateKey, privateKeyVI);
+
+    return new ethers.Wallet(decryptedKey);
   }
 }
