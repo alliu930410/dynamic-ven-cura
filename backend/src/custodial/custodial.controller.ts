@@ -1,9 +1,19 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CustodialService } from './custodial.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ApiCreatedResponse, ApiHeaders, ApiOkResponse } from '@nestjs/swagger';
-import { GetCustodialWalletsDto } from './custodial.dto';
+import { GetBalanceDto, GetCustodialWalletsDto } from './custodial.dto';
 import { AuthenticatedDynamicUserDto } from 'src/auth/auth.dto';
+import { InvalidChainIdException } from 'src/evm/evm.exceptions';
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 
 @Controller('custodial')
 export class CustodialController {
@@ -42,5 +52,19 @@ export class CustodialController {
   async createWallet(@Req() req: AuthenticatedDynamicUserDto) {
     const { dynamicUserId } = req.user;
     return this.custodialService.createWallet(dynamicUserId);
+  }
+
+  @Get('/wallet/balance/:chainId/:address')
+  @ApiOkResponse({
+    description:
+      'Returns the balance for the specified address on the specified chain',
+    type: GetBalanceDto,
+  })
+  @ApiException(() => [InvalidChainIdException])
+  async getBalance(
+    @Param('chainId', ParseIntPipe) chainId: number,
+    @Param('address') address: string,
+  ) {
+    return this.custodialService.getBalance(chainId, address);
   }
 }

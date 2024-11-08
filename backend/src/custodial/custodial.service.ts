@@ -3,14 +3,19 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { pick } from 'lodash';
 import {
   CreateCustodialWalletDto,
+  GetBalanceDto,
   GetCustodialWalletsDto,
 } from './custodial.dto';
 import { generateKey } from 'src/utils/keygen';
 import { encryptKey } from 'src/utils/crypto';
+import { EVMService } from 'src/evm/evm.service';
 
 @Injectable()
 export class CustodialService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly evmService: EVMService,
+  ) {}
 
   async getWallets(dynamicUserId: string): Promise<GetCustodialWalletsDto[]> {
     const wallets = await this.prismaService.custodialWallet.findMany({
@@ -82,6 +87,14 @@ export class CustodialService {
       address,
       nickName,
       publicKey,
+    };
+  }
+
+  async getBalance(chainId: number, address: string): Promise<GetBalanceDto> {
+    const balance = await this.evmService.getBalance(chainId, address);
+    return {
+      address,
+      balance,
     };
   }
 }
