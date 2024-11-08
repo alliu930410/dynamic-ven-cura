@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 
 const { WALLET_ENCRYPTION_KEY } = process.env;
-if (WALLET_ENCRYPTION_KEY) {
+if (!WALLET_ENCRYPTION_KEY) {
   throw new Error(
     'WALLET_ENCRYPTION_KEY is not set in the environment variables',
   );
@@ -21,7 +21,7 @@ const IV_LENGTH = 16;
  */
 export const encryptKey = (
   key: string,
-  iv: Buffer | null,
+  iv: Buffer | null = null,
 ): { encryptedKey: string; iv: string } => {
   const initializationVector = iv || crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(
