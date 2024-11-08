@@ -9,7 +9,7 @@ export const useAuthenticatedApiClient = () => {
   const { token } = useDynamicToken();
   apiClient.interceptors.request.use((config) => {
     if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+      config.headers["accessToken"] = token;
     }
     return config;
   });
