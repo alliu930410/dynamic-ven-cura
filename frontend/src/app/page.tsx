@@ -17,6 +17,7 @@ import FetchUserCustodialWalletsComponent from "@/components/FetchUserCustodialW
 import CreateCustodialWalletComponent from "@/components/CreateUserCustodialWallet";
 import CustodialWalletItem from "@/components/CustodialWalletItem";
 import { baseSepolia, sepolia } from "viem/chains";
+import WalletTransactionHistory from "@/components/WalletTransactionHistory";
 
 const DynamicApp = () => {
   const [custodialWallets, setCustodialWallets]: any[] = useState([]);
@@ -24,7 +25,6 @@ const DynamicApp = () => {
   const [chainId, setChainId] = useState<number>(sepolia.id);
   const { token, setToken } = useDynamicToken();
   const [selectedWallet, setSelectedWallet] = useState<any | null>(null);
-  const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
 
   const chainNameToId: Record<string, number> = {
     [sepolia.name]: sepolia.id,
@@ -99,26 +99,12 @@ const DynamicApp = () => {
         ))}
       </div>
 
-      {/* Expandable Panel for Transaction History */}
+      {/* Expandable Panel for Wallet-Specific Operations */}
       {selectedWallet && (
-        <div className="bg-gray-100 border border-gray-300 p-4 rounded-lg shadow-lg w-1/4 ml-6 space-y-4">
-          <h3 className="text-lg font-bold">
-            Transaction History for {selectedWallet.nickName}
-          </h3>
-          {transactionHistory.length > 0 ? (
-            <ul>
-              {transactionHistory.map((transaction, index) => (
-                <li key={index}>
-                  <p>Transaction ID: {transaction.id}</p>
-                  <p>Amount: {transaction.amount}</p>
-                  <p>Date: {new Date(transaction.date).toLocaleDateString()}</p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No transaction history available.</p>
-          )}
-        </div>
+        <WalletTransactionHistory
+          chainId={chainId}
+          selectedWallet={selectedWallet}
+        />
       )}
     </div>
   );
