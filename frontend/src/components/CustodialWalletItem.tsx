@@ -3,6 +3,7 @@ import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
 import { baseSepolia, sepolia } from "viem/chains";
 import BlockiesSvg from "blockies-react-svg";
+import SelfCustody from "./SelfCustody";
 
 interface CustodialWallet {
   address: string;
@@ -45,21 +46,23 @@ const CustodialWalletItem: React.FC<CustodialWalletItemProps> = ({
   }, [chainId, address]);
 
   return (
-    <div className="flex items-center p-4 border border-gray-300 rounded-md shadow-sm bg-white cursor-pointer hover:bg-gray-400 transition duration-200">
-      <div className="mr-2 w-12 h-12 rounded-full overflow-hidden">
-        <BlockiesSvg address={address} />
-      </div>
-      <div className="ml-2 mr=2">
-        <p className="font-semibold">{nickName}</p>
-        <p className="font-semibold">{address}</p>
-        <p className="font-semibold">
-          {balance} {chainIdToNativeTokenName[chainId]}
-        </p>
-        <p>Created At: {new Date(createdAt).toLocaleDateString()}</p>
+    <div className="flex items-center justify-between p-4 border border-gray-300 rounded-md shadow-sm bg-white cursor-pointer hover:bg-gray-400 transition duration-200">
+      <div className="flex items-center mr-4">
+        <div className="w-12 h-12 rounded-full overflow-hidden">
+          <BlockiesSvg address={address} />
+        </div>
+        <div className="ml-2">
+          <p className="font-semibold">{nickName}</p>
+          <p className="font-semibold">{address}</p>
+          <p className="font-semibold">
+            {balance} {chainIdToNativeTokenName[chainId]}
+          </p>
+          <p>Created At: {new Date(createdAt).toLocaleDateString()}</p>
+        </div>
       </div>
 
-      <div className="ml-2">
-        <img src="/icons/sign.svg" alt="sign" className="w-6 h-6" />
+      <div className="flex-grow flex justify-center">
+        <SelfCustody />
       </div>
     </div>
   );
