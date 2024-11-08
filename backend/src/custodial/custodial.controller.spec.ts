@@ -4,6 +4,7 @@ import { CustodialModule } from './custodial.module';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
+import { AppModule } from 'src/app.module';
 
 describe('CustodialController', () => {
   let app: INestApplication;
@@ -11,7 +12,7 @@ describe('CustodialController', () => {
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
-      imports: [PrismaModule, CustodialModule],
+      imports: [AppModule],
     }).compile();
 
     app = module.createNestApplication();
@@ -24,7 +25,16 @@ describe('CustodialController', () => {
     // Cleanup database after each test
   });
 
-  it('should return 403 Forbidden Error if accessToken is missing', async () => {
-    await request(app.getHttpServer()).get(`/custodial/wallets`).expect(403);
+  it('should return 401 Unauthorized error if accessToken is missing', async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/custodial/wallets`)
+      .expect(401);
+
+    expect(res.body).toMatchInlineSnapshot(`
+{
+  "message": "Unauthorized",
+  "statusCode": 401,
+}
+`);
   });
 });

@@ -82,6 +82,7 @@
     "testEnvironment": "node",
     "modulePaths": [
       "<rootDir>"
-    ]
+    ],
+    "prettierPath": null
   }
 }
