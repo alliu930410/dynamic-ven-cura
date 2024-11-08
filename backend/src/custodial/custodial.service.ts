@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { pick } from 'luxon';
+import { pick } from 'lodash';
 import { GetCustodialWalletsDto } from './custodial.dto';
 
 @Injectable()
@@ -18,6 +18,8 @@ export class CustodialService {
       },
     });
 
-    return pick(custodialWallets, ['address', 'publicKey', 'createdAt']);
+    return custodialWallets.map((wallet) =>
+      pick(wallet, ['address', 'publicKey', 'createdAt']),
+    );
   }
 }

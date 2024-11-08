@@ -14,3 +14,12 @@ export class GetCustodialWalletsDto
   @ApiProperty()
   createdAt: Date;
 }
+
+export class DynamicUserDto {
+  @ApiProperty()
+  dynamicUserId: string;
+}
+
+export class AuthenticatedDynamicUserDto {
+  user: DynamicUserDto;
+}

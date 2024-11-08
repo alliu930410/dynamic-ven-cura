@@ -7,27 +7,16 @@ import { Request } from 'express';
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.DYNAMIC_PUBLIC_KEY,
-      algorithms: ['ES256'],
+      algorithms: ['RS256'],
     });
-  }
-
-  private static extractJWT(req: Request): string | null {
-    if (
-      req.cookies &&
-      'accessToken' in req.cookies &&
-      req.cookies.accessToken.length > 0
-    ) {
-      return req.cookies.accessToken;
-    }
-
-    return null;
   }
 
   async validate(payload: any, done: any) {
     const { iat, exp, sub, sid, iss, ...rest } = payload;
-    return done(null, rest);
+    // sub is the dynamicUserId
+    return done(null, { dynamicUserId: sub });
   }
 }

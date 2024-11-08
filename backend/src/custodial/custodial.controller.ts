@@ -2,7 +2,10 @@ import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { CustodialService } from './custodial.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ApiHeaders, ApiOkResponse } from '@nestjs/swagger';
-import { GetCustodialWalletsDto } from './custodial.dto';
+import {
+  AuthenticatedDynamicUserDto,
+  GetCustodialWalletsDto,
+} from './custodial.dto';
 
 @Controller('custodial')
 export class CustodialController {
@@ -21,8 +24,8 @@ export class CustodialController {
       description: 'Must be a valid jwt token from Dynamic',
     },
   ])
-  async getCustodialWallets(@Req() req: any) {
-    console.log('request', req);
-    return this.custodialService.getCustodialWallets('dynamicUserId');
+  async getCustodialWallets(@Req() req: AuthenticatedDynamicUserDto) {
+    const { dynamicUserId } = req.user;
+    return this.custodialService.getCustodialWallets(dynamicUserId);
   }
 }
