@@ -161,6 +161,7 @@ export class CustodialService {
 
   /**
    * Send a transaction to the EVM
+   * @param dynamicUserId dynamic user that is sending the transaction
    * @param chainId chain id of the network
    * @param to recipient address
    * @param amountInEth amount to send in ETH
@@ -182,7 +183,6 @@ export class CustodialService {
 
     try {
       const { transactionHash, nonce } = await this.evmService.sendTransaction(
-        chainId,
         signingWallet,
         to,
         amountInEth,

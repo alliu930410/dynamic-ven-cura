@@ -46,13 +46,12 @@ export class EVMService {
 
   /**
    * Send a transaction to the EVM
-   * @param chainId chain id of the network
+   * @param signerWallet authenticated wallet with chain provider that is sending the transaction
    * @param to recipient address
    * @param amountInEth amount to send in ETH
    * @returns transaction hash of the submitted transaction
    */
   async sendTransaction(
-    chainId: number,
     signerWallet: ethers.Wallet,
     to: string,
     amountInEth: number,
