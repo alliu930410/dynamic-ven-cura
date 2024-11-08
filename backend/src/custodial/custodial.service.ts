@@ -7,10 +7,8 @@ import { GetCustodialWalletsDto } from './custodial.dto';
 export class CustodialService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getCustodialWallets(
-    dynamicUserId: string,
-  ): Promise<GetCustodialWalletsDto[]> {
-    const custodialWallets = await this.prismaService.custodialWallet.findMany({
+  async getWallets(dynamicUserId: string): Promise<GetCustodialWalletsDto[]> {
+    const wallets = await this.prismaService.custodialWallet.findMany({
       where: {
         user: {
           dynamicUserId: dynamicUserId,
@@ -21,7 +19,7 @@ export class CustodialService {
       },
     });
 
-    return custodialWallets.map((wallet) =>
+    return wallets.map((wallet) =>
       pick(wallet, ['address', 'nickName', 'publicKey', 'createdAt']),
     );
   }
