@@ -1,12 +1,8 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-let envFileName: string;
-if (process.env.NODE_ENV === 'test') {
-  envFileName = '.env.test';
-} else {
-  envFileName = '.env';
-}
+// Always use .env.test file for testing
+const envFileName = '.env.test';
 
 const envFilePath = path.resolve(process.cwd(), envFileName);
 dotenv.config({
