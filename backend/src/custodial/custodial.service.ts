@@ -188,6 +188,21 @@ export class CustodialService {
         amountInEth,
       );
 
+      await this.prismaService.transactionHistory.create({
+        data: {
+          chainId,
+          toAddress: to,
+          amountInEth,
+          transactionHash,
+          nonce,
+          custodialWallet: {
+            connect: {
+              address,
+            },
+          },
+        },
+      });
+
       return {
         chainId,
         address,
