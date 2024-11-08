@@ -91,4 +91,7 @@ export class SendTransactionReceiptDto {
 
   @ApiProperty()
   transactionHash: string;
+
+  @ApiProperty()
+  nonce: number;
 }

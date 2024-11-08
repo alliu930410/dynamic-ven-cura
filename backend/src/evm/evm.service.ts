@@ -56,23 +56,31 @@ export class EVMService {
     signerWallet: ethers.Wallet,
     to: string,
     amountInEth: number,
-  ): Promise<string> {
-    const providerUrl = this.chainIdToProviderUrl[chainId];
-    if (!providerUrl) {
-      throw new InvalidChainIdException(chainId);
-    }
-
-    const provider = ethers.getDefaultProvider(providerUrl);
-    signerWallet.connect(provider);
-
+  ): Promise<{
+    transactionHash: string;
+    nonce: number;
+  }> {
     const tx = await signerWallet.sendTransaction({
       to,
       value: ethers.parseEther(amountInEth.toString()),
     });
 
-    console.log('--tx', tx);
+    return { transactionHash: tx.hash, nonce: tx.nonce };
+  }
 
-    return tx.hash;
+  /**
+   * Gets Alchemy provider for a given chain id
+   * @param chainId
+   */
+  async getProviderForChainId(
+    chainId: number,
+  ): Promise<ethers.JsonRpcProvider> {
+    const providerUrl = this.chainIdToProviderUrl[chainId];
+    if (!providerUrl) {
+      throw new InvalidChainIdException(chainId);
+    }
+
+    return new ethers.JsonRpcProvider(providerUrl);
   }
 
   /**

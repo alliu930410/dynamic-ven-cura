@@ -173,9 +173,15 @@ export class CustodialService {
     to: string,
     amountInEth: number,
   ): Promise<SendTransactionReceiptDto> {
-    const signingWallet = await this.getSigningWallet(dynamicUserId, address);
+    const provider = await this.evmService.getProviderForChainId(chainId);
+    const signingWallet = await this.getSigningWallet(
+      dynamicUserId,
+      address,
+      provider,
+    );
+
     try {
-      const transactionHash = await this.evmService.sendTransaction(
+      const { transactionHash, nonce } = await this.evmService.sendTransaction(
         chainId,
         signingWallet,
         to,
@@ -188,8 +194,10 @@ export class CustodialService {
         to,
         amountInEth,
         transactionHash,
+        nonce,
       };
     } catch (error) {
+      // TODO: add error handling
       console.log('Error sending transaction', error);
       throw error;
     }
