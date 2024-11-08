@@ -12,3 +12,21 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model User {
+  id Int @id @default(autoincrement())
+  dynamicUserId String @unique
+
+  custodialWallets CustodialWallet[]
+}
+
+model CustodialWallet {
+  id Int @id @default(autoincrement())
+  address String @unique
+  privateKey String @unique // Encrypted private key
+  privateKeyVI String @unique // Encrypted private key initialization vector
+
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+}
