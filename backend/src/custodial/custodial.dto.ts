@@ -3,7 +3,7 @@ import { CustodialWallet } from '@prisma/client';
 
 export class GetCustodialWalletsDto
   implements
-    Omit<CustodialWallet, 'id' | 'privateKey' | 'privateKeyVI' | 'userId'>
+    Omit<CustodialWallet, 'id' | 'privateKey' | 'privateKeyIV' | 'userId'>
 {
   @ApiProperty()
   address: string;
@@ -22,7 +22,7 @@ export class CreateCustodialWalletDto
   implements
     Omit<
       CustodialWallet,
-      'id' | 'privateKey' | 'privateKeyVI' | 'userId' | 'createdAt'
+      'id' | 'privateKey' | 'privateKeyIV' | 'userId' | 'createdAt'
     >
 {
   @ApiProperty()

@@ -68,7 +68,7 @@ export class CustodialService {
             address,
             nickName,
             privateKey: encryptedKey,
-            privateKeyVI: iv,
+            privateKeyIV: iv,
             publicKey,
           },
         },
@@ -80,7 +80,7 @@ export class CustodialService {
             address,
             nickName,
             privateKey: encryptedKey,
-            privateKeyVI: iv,
+            privateKeyIV: iv,
             publicKey,
           },
         },
@@ -119,7 +119,7 @@ export class CustodialService {
       data: {
         message,
         signature: encryptedKey,
-        signatureVI: iv,
+        signatureIV: iv,
         custodialWallet: {
           connect: {
             address,
@@ -151,8 +151,8 @@ export class CustodialService {
       throw new WalletNotFoundException(address);
     }
 
-    const { privateKey, privateKeyVI } = wallet;
-    const decryptedKey = decryptKey(privateKey, privateKeyVI);
+    const { privateKey, privateKeyIV } = wallet;
+    const decryptedKey = decryptKey(privateKey, privateKeyIV);
 
     return new ethers.Wallet(decryptedKey);
   }

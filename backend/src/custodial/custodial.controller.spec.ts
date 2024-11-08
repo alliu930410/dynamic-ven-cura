@@ -85,14 +85,14 @@ describe('CustodialController', () => {
                 address: '0x123',
                 nickName: 'Account 1',
                 privateKey: 'test_private_key_1',
-                privateKeyVI: 'test_string_iv_1',
+                privateKeyIV: 'test_string_iv_1',
                 publicKey: 'test_public_key_1',
                 createdAt: new Date('2024-11-08T00:00:00.000Z'),
               },
               {
                 address: '0x456',
                 privateKey: 'test_private_key_2',
-                privateKeyVI: 'test_string_iv_2',
+                privateKeyIV: 'test_string_iv_2',
                 publicKey: 'test_public_key_2',
                 createdAt: new Date('2024-11-07T00:00:00.000Z'),
               },
@@ -364,7 +364,7 @@ describe('CustodialController', () => {
 
       expect(messageHistories).toHaveLength(1);
       expect(messageHistories[0].signature === testMessage).toBe(false);
-      expect(messageHistories[0].signatureVI).toBeDefined();
+      expect(messageHistories[0].signatureIV).toBeDefined();
     });
   });
 });
