@@ -19,6 +19,8 @@ import {
 import {
   GetBalanceDto,
   GetCustodialWalletsDto,
+  SendTransactionDto,
+  SendTransactionReceiptDto,
   SignedMessageDto,
   SignMessageDto,
 } from './custodial.dto';
@@ -98,5 +100,31 @@ export class CustodialController {
     const { dynamicUserId } = req.user;
     const { address, message } = signMessageDto;
     return this.custodialService.signMessage(dynamicUserId, address, message);
+  }
+
+  @Post('/wallet/sendTransaction')
+  @UseGuards(JwtAuthGuard)
+  @ApiBody({
+    required: true,
+    type: SendTransactionDto,
+  })
+  @ApiCreatedResponse({
+    description:
+      'Send a basic transaction to the specified chain with the specified wallet',
+    type: SendTransactionReceiptDto,
+  })
+  async sendTransaction(
+    @Req() req: AuthenticatedDynamicUserDto,
+    @Body() sendTransactionDto: SendTransactionDto,
+  ) {
+    const { dynamicUserId } = req.user;
+    const { chainId, address, to, amountInEth } = sendTransactionDto;
+    return this.custodialService.sendTransaction(
+      dynamicUserId,
+      chainId,
+      address,
+      to,
+      amountInEth,
+    );
   }
 }

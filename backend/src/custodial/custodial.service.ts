@@ -5,6 +5,7 @@ import {
   CreateCustodialWalletDto,
   GetBalanceDto,
   GetCustodialWalletsDto,
+  SendTransactionReceiptDto,
   SignedMessageDto,
 } from './custodial.dto';
 import { generateKey } from 'src/utils/keygen';
@@ -171,15 +172,23 @@ export class CustodialService {
     address: string,
     to: string,
     amountInEth: number,
-  ): Promise<string> {
+  ): Promise<SendTransactionReceiptDto> {
     const signingWallet = await this.getSigningWallet(dynamicUserId, address);
     try {
-      return await this.evmService.sendTransaction(
+      const transactionHash = await this.evmService.sendTransaction(
         chainId,
         signingWallet,
         to,
         amountInEth,
       );
+
+      return {
+        chainId,
+        address,
+        to,
+        amountInEth,
+        transactionHash,
+      };
     } catch (error) {
       console.log('Error sending transaction', error);
       throw error;
