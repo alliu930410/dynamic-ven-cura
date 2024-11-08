@@ -26,7 +26,11 @@ model CustodialWallet {
   address String @unique
   privateKey String @unique // Encrypted private key
   privateKeyVI String @unique // Encrypted private key initialization vector
+  publicKey String @unique
 
   userId Int
   user User @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
