@@ -9,7 +9,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([JwtStrategy.extractJWT]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_PUBLIC_KEY,
+      secretOrKey: process.env.DYNAMIC_PUBLIC_KEY,
       algorithms: ['ES256'],
     });
   }
