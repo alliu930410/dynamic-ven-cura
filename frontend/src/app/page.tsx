@@ -14,9 +14,10 @@ import {
 } from "@/context/DynamicTokenContext";
 import FetchUserCustodialWalletsComponent from "@/components/FetchUserCustodialWallets";
 import CreateCustodialWalletComponent from "@/components/CreateUserCustodialWallet";
+import CustodialWalletItem from "@/components/CustodialWalletItem";
 
 const DynamicApp = () => {
-  const [custodialWallets, setCustodialWallets] = useState([]);
+  const [custodialWallets, setCustodialWallets]: any[] = useState([]);
   const { token, setToken } = useDynamicToken();
 
   useEffect(() => {
@@ -41,12 +42,13 @@ const DynamicApp = () => {
           }}
         >
           <DynamicWidget />
-          <h1>
-            Custodial Wallets:{" "}
-            {custodialWallets
-              ? JSON.stringify(custodialWallets)
-              : "Haven't fetched any yet"}
-          </h1>
+
+          {custodialWallets.map((walletItem: any) => (
+            <CustodialWalletItem
+              key={walletItem.address}
+              walletItem={walletItem}
+            />
+          ))}
           {custodialWallets.length === 0 && (
             <FetchUserCustodialWalletsComponent
               setItems={setCustodialWallets}

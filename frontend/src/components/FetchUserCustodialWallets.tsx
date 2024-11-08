@@ -26,7 +26,7 @@ const FetchUserCustodialWalletsComponent: React.FC<
         onClick={handleFetchUserCustodialWallets}
         className="px-6 py-2 bg-black text-white font-semibold rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
       >
-        Fetch My Custodial Wallets
+        Refresh My Custodial Wallets
       </button>
     </div>
   );
