@@ -8,8 +8,9 @@ const CreateCustodialWalletComponent: React.FC = () => {
   const handleCreateCustodialWallet = async () => {
     try {
       const response = await apiClient.post("/custodial/wallet");
-      toast.success("Custodial wallet created successfully!");
-      console.log("Wallet creation response:", response.data);
+      toast.success(
+        `Created ${response.data.nickName}: ${response.data.address}`
+      );
     } catch (error: any) {
       toast.error(`Error creating custodial wallet: ${error}`);
       console.error("Error creating wallet:", error);
