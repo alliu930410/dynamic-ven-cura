@@ -11,7 +11,7 @@ import { generateKey } from 'src/utils/keygen';
 import { decryptKey, encryptKey } from 'src/utils/crypto';
 import { EVMService } from 'src/evm/evm.service';
 import { Prisma } from '@prisma/client';
-import { ethers } from 'ethers';
+import { ethers, Provider } from 'ethers';
 import { WalletNotFoundException } from './custodial.exceptions';
 
 @Injectable()
@@ -134,6 +134,7 @@ export class CustodialService {
   private async getSigningWallet(
     dynamicUserId: string,
     address: string,
+    provider: Provider | null = null,
   ): Promise<ethers.Wallet> {
     const wallet = await this.prismaService.custodialWallet.findFirst({
       where: {
@@ -154,6 +155,34 @@ export class CustodialService {
     const { privateKey, privateKeyIV } = wallet;
     const decryptedKey = decryptKey(privateKey, privateKeyIV);
 
-    return new ethers.Wallet(decryptedKey);
+    return new ethers.Wallet(decryptedKey, provider);
+  }
+
+  /**
+   * Send a transaction to the EVM
+   * @param chainId chain id of the network
+   * @param to recipient address
+   * @param amountInEth amount to send in ETH
+   * @returns transaction hash of the submitted transaction
+   */
+  async sendTransaction(
+    dynamicUserId: string,
+    chainId: number,
+    address: string,
+    to: string,
+    amountInEth: number,
+  ): Promise<string> {
+    const signingWallet = await this.getSigningWallet(dynamicUserId, address);
+    try {
+      return await this.evmService.sendTransaction(
+        chainId,
+        signingWallet,
+        to,
+        amountInEth,
+      );
+    } catch (error) {
+      console.log('Error sending transaction', error);
+      throw error;
+    }
   }
 }
