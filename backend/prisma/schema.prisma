@@ -26,11 +26,26 @@ model CustodialWallet {
   address String @unique
   nickName String?
   privateKey String @unique // Encrypted private key
-  privateKeyVI String @unique // Encrypted private key initialization vector
+  privateKeyIV String @unique // Encrypted private key initialization vector
   publicKey String @unique
 
   userId Int?
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  messageHistory MessageHistory[]
+
+  createdAt     DateTime          @default(now())
+}
+
+
+model MessageHistory {
+  id Int @id @default(autoincrement())
+  message String
+  signature String
+  signatureIV String
+
+  custodialWalletId Int
+  custodialWallet CustodialWallet @relation(fields: [custodialWalletId], references: [id], onDelete: Cascade)
 
   createdAt     DateTime          @default(now())
 }

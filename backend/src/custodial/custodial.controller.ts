@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -9,11 +10,22 @@ import {
 } from '@nestjs/common';
 import { CustodialService } from './custodial.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { ApiCreatedResponse, ApiHeaders, ApiOkResponse } from '@nestjs/swagger';
-import { GetBalanceDto, GetCustodialWalletsDto } from './custodial.dto';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiHeaders,
+  ApiOkResponse,
+} from '@nestjs/swagger';
+import {
+  GetBalanceDto,
+  GetCustodialWalletsDto,
+  SignedMessageDto,
+  SignMessageDto,
+} from './custodial.dto';
 import { AuthenticatedDynamicUserDto } from 'src/auth/auth.dto';
 import { InvalidChainIdException } from 'src/evm/evm.exceptions';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { WalletNotFoundException } from './custodial.exceptions';
 
 @Controller('custodial')
 export class CustodialController {
@@ -66,5 +78,25 @@ export class CustodialController {
     @Param('address') address: string,
   ) {
     return this.custodialService.getBalance(chainId, address);
+  }
+
+  @Post('/signMessage')
+  @UseGuards(JwtAuthGuard)
+  @ApiBody({
+    required: true,
+    type: SignMessageDto,
+  })
+  @ApiCreatedResponse({
+    description: 'Signs a message with the specified custodial wallet',
+    type: SignedMessageDto,
+  })
+  @ApiException(() => [WalletNotFoundException])
+  async signMessage(
+    @Req() req: AuthenticatedDynamicUserDto,
+    @Body() signMessageDto: SignMessageDto,
+  ) {
+    const { dynamicUserId } = req.user;
+    const { address, message } = signMessageDto;
+    return this.custodialService.signMessage(dynamicUserId, address, message);
   }
 }
