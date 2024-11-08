@@ -103,7 +103,7 @@ export class CustodialController {
   }
 
   @Post('/wallet/sendTransaction')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiBody({
     required: true,
     type: SendTransactionDto,
@@ -113,6 +113,7 @@ export class CustodialController {
       'Send a basic transaction to the specified chain with the specified wallet',
     type: SendTransactionReceiptDto,
   })
+  @ApiException(() => [WalletNotFoundException, InvalidChainIdException])
   async sendTransaction(
     @Req() req: AuthenticatedDynamicUserDto,
     @Body() sendTransactionDto: SendTransactionDto,
