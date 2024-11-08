@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { pick } from 'luxon';
-import { CustodialWalletsDto } from './custodial.dto';
+import { GetCustodialWalletsDto } from './custodial.dto';
 
 @Injectable()
 export class CustodialService {
@@ -9,7 +9,7 @@ export class CustodialService {
 
   async getCustodialWallets(
     dynamicUserId: string,
-  ): Promise<CustodialWalletsDto[]> {
+  ): Promise<GetCustodialWalletsDto[]> {
     const custodialWallets = await this.prismaService.custodialWallet.findMany({
       where: {
         user: {

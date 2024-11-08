@@ -28,12 +28,15 @@
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^8.0.3",
     "@prisma/client": "5.22.0",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
     "luxon": "^3.5.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
@@ -77,8 +80,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "setupFiles": [
-      "<rootDir>/test/setup-jest.ts"
+    "modulePaths": [
+      "<rootDir>"
     ]
   }
 }
