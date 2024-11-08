@@ -1,4 +1,5 @@
 "use client";
+import { ToastContainer } from "react-toastify";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -54,6 +55,7 @@ const DynamicApp = () => {
 
 const App = () => (
   <DynamicTokenProvider>
+    <ToastContainer />
     <DynamicApp />
   </DynamicTokenProvider>
 );

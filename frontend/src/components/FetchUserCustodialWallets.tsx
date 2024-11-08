@@ -1,5 +1,6 @@
 import { useAuthenticatedApiClient } from "@/services/apiClient";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 interface FetchUserCustodialWalletsProps {
   setItems: (item: any) => void;
 }
@@ -13,7 +14,8 @@ const FetchUserCustodialWalletsComponent: React.FC<
     try {
       const response = await apiClient.get("/custodial/wallets");
       setItems(response.data);
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(`Error fetching custodial wallets: ${error}`);
       console.error("Error fetching data:", error);
     }
   };
