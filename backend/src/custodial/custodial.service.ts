@@ -16,6 +16,9 @@ export class CustodialService {
           dynamicUserId: dynamicUserId,
         },
       },
+      orderBy: {
+        createdAt: 'asc',
+      },
     });
 
     return custodialWallets.map((wallet) =>

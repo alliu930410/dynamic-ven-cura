@@ -21,5 +21,6 @@ export class DynamicUserDto {
 }
 
 export class AuthenticatedDynamicUserDto {
+  @ApiProperty({ type: DynamicUserDto })
   user: DynamicUserDto;
 }
