@@ -34,3 +34,11 @@ export class CreateCustodialWalletDto
   @ApiProperty()
   publicKey: string;
 }
+
+export class GetBalanceDto {
+  @ApiProperty()
+  address: string;
+
+  @ApiProperty()
+  balance: string;
+}
