@@ -26,6 +26,7 @@
     "test": "dotenv -e .env.test -- yarn docker:test:up && yarn prisma:generate && dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand"
   },
   "dependencies": {
+    "@nanogiants/nestjs-swagger-api-exception-decorator": "^1.6.11",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/passport": "^10.0.3",

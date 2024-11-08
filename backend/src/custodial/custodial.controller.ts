@@ -12,6 +12,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 import { ApiCreatedResponse, ApiHeaders, ApiOkResponse } from '@nestjs/swagger';
 import { GetBalanceDto, GetCustodialWalletsDto } from './custodial.dto';
 import { AuthenticatedDynamicUserDto } from 'src/auth/auth.dto';
+import { InvalidChainIdException } from 'src/evm/evm.exceptions';
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 
 @Controller('custodial')
 export class CustodialController {
@@ -58,6 +60,7 @@ export class CustodialController {
       'Returns the balance for the specified address on the specified chain',
     type: GetBalanceDto,
   })
+  @ApiException(() => [InvalidChainIdException])
   async getBalance(
     @Param('chainId', ParseIntPipe) chainId: number,
     @Param('address') address: string,
