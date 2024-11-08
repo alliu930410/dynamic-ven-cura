@@ -22,7 +22,7 @@ export class CustodialService {
     });
 
     return custodialWallets.map((wallet) =>
-      pick(wallet, ['address', 'publicKey', 'createdAt']),
+      pick(wallet, ['address', 'nickName', 'publicKey', 'createdAt']),
     );
   }
 }

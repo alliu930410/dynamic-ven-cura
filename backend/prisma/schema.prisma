@@ -24,6 +24,7 @@ model User {
 model CustodialWallet {
   id Int @id @default(autoincrement())
   address String @unique
+  nickName String?
   privateKey String @unique // Encrypted private key
   privateKeyVI String @unique // Encrypted private key initialization vector
   publicKey String @unique

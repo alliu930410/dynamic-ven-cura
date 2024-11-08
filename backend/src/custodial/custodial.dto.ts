@@ -9,6 +9,9 @@ export class GetCustodialWalletsDto
   address: string;
 
   @ApiProperty()
+  nickName: string | null;
+
+  @ApiProperty()
   publicKey: string;
 
   @ApiProperty()
