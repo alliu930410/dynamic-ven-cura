@@ -37,4 +37,19 @@ export class EVMService {
 
     return balanceInEther;
   }
+
+  /**
+   * Send a transaction to the EVM
+   * @param to recipient address
+   * @param amountInEth amount to send in ETH
+   * @returns transaction hash of the submitted transaction
+   */
+  async sendTransaction(to: string, amountInEth: number): Promise<string> {}
+
+  /**
+   * Retrieves the transaction receipt for a given transaction hash
+   * @param txHash transaction hash
+   * TODO: implement
+   */
+  async getTransactionReceipt(txHash: string): Promise<any> {}
 }
