@@ -13,7 +13,7 @@ const FetchUserCustodialWalletsComponent: React.FC<
 > = ({ token, interactionToggle, setItems }) => {
   const apiClient = useAuthenticatedApiClient();
 
-  const handleFetchUserCustodialWallets = async () => {
+  const handleFetchUserCustodialWallets = useCallback(async () => {
     try {
       const response = await apiClient.get("/custodial/wallets");
       setItems(response.data);
@@ -21,14 +21,13 @@ const FetchUserCustodialWalletsComponent: React.FC<
       toast.error(`Error fetching custodial wallets: ${error}`);
       console.error("Error fetching data:", error);
     }
-  };
+  }, [apiClient, setItems]);
 
   useEffect(() => {
-    // Fetch user custodial wallets when token is present
     if (token) {
       handleFetchUserCustodialWallets();
     }
-  }, [token, interactionToggle]);
+  }, [token, interactionToggle, handleFetchUserCustodialWallets]);
 
   return (
     <div className="flex flex-col items-center space-y-4 p-6 border border-gray-300 rounded-md shadow-md">

@@ -42,7 +42,7 @@ const CustodialWalletItem: React.FC<CustodialWalletItemProps> = ({
     };
 
     fetchBalance();
-  }, [chainId, address]);
+  }, [chainId, address, apiClient]);
 
   return (
     <div className="flex items-center justify-between p-4 border border-gray-300 rounded-md shadow-sm bg-white cursor-pointer hover:bg-gray-400 transition duration-200">
