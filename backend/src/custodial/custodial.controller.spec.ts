@@ -643,12 +643,32 @@ describe('CustodialController', () => {
   });
 
   describe('GET /custodial/wallet/transactions/:chainId/:address', () => {
+    let mockDynamicUserId: string = 'existing-user';
+    let mockCustodialWalletAddress: string;
+    let token: string;
+
+    beforeEach(async () => {
+      // Prep: generate a token that resolves to a user with a custodial wallet
+      token = generateJwtToken({
+        sub: mockDynamicUserId,
+      });
+
+      // Prep: create the user with a custodial wallet in db
+      const resWalletCreation = await request(app.getHttpServer())
+        .post(`/custodial/wallet`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(201);
+      mockCustodialWalletAddress = resWalletCreation.body.address;
+    });
+
     it("should return 200 OK with empty array if there's no transaction history", async () => {
       // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 0 transactions
       jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([]);
 
       const res = await request(app.getHttpServer())
-        .get(`/custodial/wallet/transactions/${sepolia.id}/0xWallet`)
+        .get(
+          `/custodial/wallet/transactions/${sepolia.id}/${mockCustodialWalletAddress}`,
+        )
         .expect(200);
 
       expect(res.body).toHaveLength(0);
@@ -659,30 +679,69 @@ describe('CustodialController', () => {
       // TODO: replace with lower-level mock on the EVMProvider if possible
       jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([
         {
-          from: '0xWallet',
+          from: mockCustodialWalletAddress,
           to: '0xOthers',
-          transactionHash: '0xHash1',
+          hash: '0xHash1',
           nonce: '2',
         },
         {
-          from: '0xWallet',
+          from: mockCustodialWalletAddress,
           to: '0xOthers',
-          transactionHash: '0xHash2',
+          hash: '0xHash2',
           nonce: '1',
         },
         {
-          from: '0xWallet',
+          from: mockCustodialWalletAddress,
           to: '0xOthers',
-          transactionHash: '0xHash3',
+          hash: '0xHash3',
           nonce: '0',
         },
       ]);
 
       const res = await request(app.getHttpServer())
-        .get(`/custodial/wallet/transactions/${sepolia.id}/0xWallet`)
+        .get(
+          `/custodial/wallet/transactions/${sepolia.id}/${mockCustodialWalletAddress}`,
+        )
         .expect(200);
 
       expect(res.body).toHaveLength(3);
+    });
+
+    it('should return 200 OK with transactions if wallet has both sealed & pending transactions', async () => {
+      // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 1 transaction
+      // TODO: replace with lower-level mock on the EVMProvider if possible
+      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([
+        {
+          from: mockCustodialWalletAddress,
+          to: '0xOthers',
+          hash: '0xHash0',
+          nonce: '0',
+        },
+      ]);
+
+      // Prep: mock database has a pending transaction for the wallet
+      await prismaService.transactionHistory.create({
+        data: {
+          custodialWallet: {
+            connect: {
+              address: mockCustodialWalletAddress,
+            },
+          },
+          transactionHash: '0xHash1',
+          nonce: 1,
+          chainId: sepolia.id,
+          toAddress: '0xOther',
+          amountInEth: 0.01,
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .get(
+          `/custodial/wallet/transactions/${sepolia.id}/${mockCustodialWalletAddress}`,
+        )
+        .expect(200);
+
+      expect(res.body).toHaveLength(2);
     });
   });
 });

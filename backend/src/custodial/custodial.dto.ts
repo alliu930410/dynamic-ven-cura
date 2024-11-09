@@ -142,4 +142,7 @@ export class GetTransactionHistoryDto {
 
   @ApiProperty()
   nonce: number;
+
+  @ApiProperty()
+  sealed: boolean;
 }
