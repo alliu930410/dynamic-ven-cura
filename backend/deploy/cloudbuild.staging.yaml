@@ -21,33 +21,27 @@ steps:
         'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA',
       ]
 
-  # # Spinning up the test database
-  # - id: start-test-db
-  #   name: 'docker/compose:1.29.2'
-  #   args: ['-f', 'backend/docker-compose-ci.yml', 'up', '-d', 'db_test']
+  # Spinning up the test database
+  - id: start-test-db
+    name: 'docker/compose:1.29.2'
+    args: ['-f', 'backend/docker-compose-ci.yml', 'up', '-d', 'db_test']
 
-  # # Run unit tests
-  # - id: integration-tests
-  #   name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
-  #   args: ['test:ci']
-  #   env:
-  #     - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
-  #     - 'NODE_ENV_IS_CI=true'
-  #   waitFor: [docker-build, docker-push, start-test-db]
-  #   dir: /usr/src/app
+  # Run unit tests
+  - id: integration-tests
+    name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
+    args: ['test:ci']
+    env:
+      - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
+      - 'NODE_ENV_IS_CI=true'
+    waitFor: [docker-build, docker-push, start-test-db]
+    dir: /usr/src/app
 
-  # # Spinning down the test database
-  # - id: stop-test-db
-  #   name: 'docker/compose:1.29.2'
-  #   args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
+  # Spinning down the test database
+  - id: stop-test-db
+    name: 'docker/compose:1.29.2'
+    args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
 
-  # # Run database migrations
-  # - name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
-  #   args: ['migrate:staging:ci']
-  #   secretEnv: ['DATABASE_URL']
-  #   dir: /usr/src/app
-
-  # Deploy container image to Cloud Run, and start api server
+  # Deploy container image to Cloud Run, run migration, and start api server
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     dir: /usr/src/app
@@ -71,9 +65,5 @@ steps:
         DYNAMIC_PUBLIC_KEY=DYNAMIC_PUBLIC_KEY:latest
       - --set-cloudsql-instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura
 
-# availableSecrets:
-#   secretManager:
-#     - versionName: projects/162382446001/secrets/DATABASE_URL_CI/versions/latest
-#       env: 'DATABASE_URL'
 images:
   - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
