@@ -1,17 +1,18 @@
+import { useDynamicToken } from "@/context/DynamicTokenContext";
 import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 
 interface FetchUserCustodialWalletsProps {
-  token: string | null;
   interactionToggle: boolean;
   setItems: (item: any) => void;
 }
 
 const FetchUserCustodialWalletsComponent: React.FC<
   FetchUserCustodialWalletsProps
-> = ({ token, interactionToggle, setItems }) => {
+> = ({ interactionToggle, setItems }) => {
   const apiClient = useAuthenticatedApiClient();
+  const { token } = useDynamicToken();
 
   const handleFetchUserCustodialWallets = useCallback(async () => {
     if (!token) {
