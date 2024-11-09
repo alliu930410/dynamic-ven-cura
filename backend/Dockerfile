@@ -10,9 +10,6 @@ RUN corepack enable
 COPY backend .
 RUN yarn install
 
-# Copying the cloud sql proxy script
-COPY --from=gcr.io/cloudsql-docker/gce-proxy /cloud_sql_proxy /cloudsql/cloud_sql_proxy
-
 RUN yarn build
 
 ENV PATH="/root/.local/bin:$PATH"
