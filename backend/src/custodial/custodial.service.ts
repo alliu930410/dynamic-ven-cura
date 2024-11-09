@@ -217,4 +217,35 @@ export class CustodialService {
       throw error;
     }
   }
+
+  async getMessageHistory(
+    dynamicUserId: string,
+    address: string,
+    page: number = 1, // default to first page
+    limit: number = 10, // default to 10 messages per page
+  ): Promise<any[]> {
+    const wallet = await this.getSigningWallet(dynamicUserId, address);
+    if (!wallet) {
+      throw new WalletNotFoundException(address);
+    }
+
+    const messages = await this.prismaService.messageHistory.findMany({
+      where: {
+        custodialWallet: {
+          address,
+        },
+      },
+      skip: limit * ((page > 0 ? page : 1) - 1),
+      take: limit,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    return messages.map((message) => ({
+      address,
+      message: message.message,
+      signature: message.signature,
+    }));
+  }
 }
