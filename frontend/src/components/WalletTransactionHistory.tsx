@@ -69,7 +69,7 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
                   selectedWallet.address.toLowerCase()
                     ? "-"
                     : "+"}
-                  {tx.value} ETH
+                  {tx.amountInEth} ETH
                 </p>
               </div>
             </div>
