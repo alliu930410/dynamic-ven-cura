@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
+import { baseSepolia, sepolia } from "viem/chains";
 
 interface CustodialWallet {
   address: string;
@@ -21,6 +22,17 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
 }) => {
   const apiClient = useAuthenticatedApiClient();
   const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
+
+  const networkToEtherscanPrefix = (chainId: number) => {
+    switch (chainId) {
+      case sepolia.id:
+        return "https://sepolia.etherscan.io/tx/";
+      case baseSepolia.id:
+        return "https://sepolia.basescan.org/tx/";
+      default:
+        return "https://sepolia.etherscan.io/tx/";
+    }
+  };
 
   useEffect(() => {
     const fetchTransactionHistory = async () => {
@@ -63,7 +75,7 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
                   <p className="text-xs text-red-500">Pending</p>
                 )}
               </div>
-              <div className="text-right">
+              <div className="flex items-center justify-between">
                 <p className="text-sm font-semibold text-gray-800">
                   {tx.from.toLowerCase() ===
                   selectedWallet.address.toLowerCase()
@@ -71,6 +83,22 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
                     : "+"}
                   {tx.amountInEth} ETH
                 </p>
+                <a
+                  href={`${networkToEtherscanPrefix(chainId)}${
+                    tx.transactionHash
+                  }`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`${networkToEtherscanPrefix(chainId)}${
+                    tx.transactionHash
+                  }`}
+                >
+                  <img
+                    src="/icons/redirect.svg"
+                    alt="redirect"
+                    className="w-6 h-6 cursor-pointer"
+                  />
+                </a>
               </div>
             </div>
           ))}
