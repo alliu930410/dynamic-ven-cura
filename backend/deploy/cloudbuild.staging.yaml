@@ -41,11 +41,11 @@ steps:
     name: 'docker/compose:1.29.2'
     args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
 
-  # Run database migrations
-  - name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
-    args: ['migrate:staging:ci']
-    secretEnv: ['DATABASE_URL']
-    dir: /usr/src/app
+  # # Run database migrations
+  # - name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
+  #   args: ['migrate:staging:ci']
+  #   secretEnv: ['DATABASE_URL']
+  #   dir: /usr/src/app
 
   # Deploy container image to Cloud Run, and start api server
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -74,9 +74,9 @@ steps:
         --update-env-vars=^|||^
           NODE_ENV=production|||
 
-availableSecrets:
-  secretManager:
-    - versionName: projects/162382446001/secrets/DATABASE_URL_CI/versions/latest
-      env: 'DATABASE_URL'
+# availableSecrets:
+#   secretManager:
+#     - versionName: projects/162382446001/secrets/DATABASE_URL_CI/versions/latest
+#       env: 'DATABASE_URL'
 images:
   - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
