@@ -7,6 +7,7 @@ import {
   DynamicContextProvider,
   DynamicWidget,
   getAuthToken,
+  useDynamicContext,
 } from "@dynamic-labs/sdk-react-core";
 import { EthereumWalletConnectors } from "@dynamic-labs/ethereum";
 import {
@@ -23,9 +24,10 @@ const DynamicApp = () => {
   const [custodialWallets, setCustodialWallets]: any[] = useState([]);
   const [network, setNetwork] = useState<string>(sepolia.name);
   const [chainId, setChainId] = useState<number>(sepolia.id);
-  const { token, setToken } = useDynamicToken();
+  const { setToken } = useDynamicToken();
   const [selectedWallet, setSelectedWallet] = useState<any | null>(null);
   const [interactionToggle, setInteractionToggle] = useState<boolean>(false);
+  const { authToken } = useDynamicContext();
 
   const chainNameToId: Record<string, number> = {
     [sepolia.name]: sepolia.id,
@@ -42,7 +44,7 @@ const DynamicApp = () => {
     };
 
     fetchToken();
-  }, [interactionToggle, setToken]);
+  }, [authToken, interactionToggle, setToken]);
 
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNetwork(event.target.value);
@@ -59,14 +61,7 @@ const DynamicApp = () => {
   return (
     <div className="bg-white text-black min-h-screen flex p-4">
       <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-lg w-1/3 space-y-6">
-        <DynamicContextProvider
-          settings={{
-            environmentId: "e95369b8-4e91-43f6-b483-dac1a163b57e",
-            walletConnectors: [EthereumWalletConnectors],
-          }}
-        >
-          <DynamicWidget />
-        </DynamicContextProvider>
+        <DynamicWidget />
         {/* Network Toggle Section */}
         <div className="flex items-center">
           <h2 className="text-lg font-bold">{`Network(id: ${chainId})`}: </h2>
@@ -83,12 +78,10 @@ const DynamicApp = () => {
         {/* Admin panel section */}
         <h2 className="text-lg font-bold">Admin Panel</h2>
         <FetchUserCustodialWalletsComponent
-          token={token}
           interactionToggle={interactionToggle}
           setItems={setCustodialWallets}
         />
         <CreateCustodialWalletComponent
-          token={token}
           interactionToggle={interactionToggle}
           setInteractionToggle={setInteractionToggle}
         />
@@ -123,8 +116,15 @@ const DynamicApp = () => {
 
 const App = () => (
   <DynamicTokenProvider>
-    <ToastContainer />
-    <DynamicApp />
+    <DynamicContextProvider
+      settings={{
+        environmentId: "e95369b8-4e91-43f6-b483-dac1a163b57e",
+        walletConnectors: [EthereumWalletConnectors],
+      }}
+    >
+      <ToastContainer />
+      <DynamicApp />
+    </DynamicContextProvider>
   </DynamicTokenProvider>
 );
 
