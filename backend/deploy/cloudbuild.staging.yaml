@@ -76,7 +76,7 @@ steps:
 
 availableSecrets:
   secretManager:
-    - versionName: projects/162382446001/secrets/DATABASE_URL/versions/latest
+    - versionName: projects/162382446001/secrets/DATABASE_URL_CI/versions/latest
       env: 'DATABASE_URL'
 images:
   - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
