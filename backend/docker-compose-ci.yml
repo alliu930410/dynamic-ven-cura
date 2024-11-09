@@ -1,0 +1,21 @@
+services:
+  db_test:
+    image: postgres:17-alpine
+    restart: always
+    container_name: ven_cura_test
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=ven_cura
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      # Ref: https://stackoverflow.com/a/71315084
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+networks:
+  default:
+    external:
+      name: cloudbuild

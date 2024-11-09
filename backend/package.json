@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start",
+    "start": "yarn prisma:generate && npx prisma migrate deploy && nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -23,7 +23,11 @@
     "docker:test:down": "docker compose down db_test",
     "prisma:generate": "npx prisma generate --schema=./prisma/schema.prisma",
     "migrate:dev": "dotenv -e .env.dev npx prisma migrate dev",
-    "test": "dotenv -e .env.test -- yarn docker:test:up && yarn prisma:generate && dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand"
+    "migrate:production": "yarn prisma:generate && npx prisma migrate deploy",
+    "migrate:staging:ci": "/cloudsql/cloud_sql_proxy -instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura=tcp:5544 & sleep 2 && npx prisma migrate deploy",
+    "test": "dotenv -e .env.test -- yarn docker:test:up && yarn prisma:generate && dotenv -e .env.test -- npx prisma migrate deploy && dotenv -e .env.test -- jest --runInBand",
+    "test:ci": "dotenv -e .env.test -- yarn prisma:generate && dotenv -e .env.test -- npx prisma migrate deploy && dotenv -e .env.test -- jest --runInBand",
+    "db:socket:staging": "./bin/cloud_sql_proxy -instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura=tcp:5544"
   },
   "dependencies": {
     "@nanogiants/nestjs-swagger-api-exception-decorator": "^1.6.11",
@@ -53,6 +57,7 @@
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "dotenv-cli": "^7.4.2",
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
