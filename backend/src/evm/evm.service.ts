@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Alchemy, Network } from 'alchemy-sdk';
 import { sepolia, polygonAmoy, baseSepolia } from 'viem/chains';
-import { InvalidChainIdException } from './evm.exceptions';
+import {
+  InsufficientFundException,
+  InvalidChainIdException,
+} from './evm.exceptions';
 import { ethers } from 'ethers';
 
 export enum SUPPORTED_CHAIN_IDS {
@@ -59,12 +62,18 @@ export class EVMService {
     transactionHash: string;
     nonce: number;
   }> {
-    const tx = await signerWallet.sendTransaction({
-      to,
-      value: ethers.parseEther(amountInEth.toString()),
-    });
+    try {
+      const tx = await signerWallet.sendTransaction({
+        to,
+        value: ethers.parseEther(amountInEth.toString()),
+      });
 
-    return { transactionHash: tx.hash, nonce: tx.nonce };
+      return { transactionHash: tx.hash, nonce: tx.nonce };
+    } catch (error: any) {
+      if (error.code === 'INSUFFICIENT_FUNDS') {
+        throw new InsufficientFundException();
+      }
+    }
   }
 
   /**

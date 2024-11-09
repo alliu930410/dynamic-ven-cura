@@ -8,3 +8,12 @@ export class InvalidChainIdException extends BadRequestException {
     });
   }
 }
+
+export class InsufficientFundException extends BadRequestException {
+  constructor() {
+    super({
+      error: 'InsufficientFundException',
+      message: 'Wallet does not have enough funds to send the transaction',
+    });
+  }
+}
