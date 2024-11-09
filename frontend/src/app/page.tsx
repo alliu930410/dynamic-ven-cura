@@ -36,6 +36,10 @@ const DynamicApp = () => {
 
   useEffect(() => {
     const fetchToken = async () => {
+      if (!authToken) {
+        setToken(null);
+      }
+
       const jwtToken = getAuthToken();
       if (jwtToken) {
         // Set global token with Dynamic jwt token
