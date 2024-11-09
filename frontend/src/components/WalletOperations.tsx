@@ -3,6 +3,7 @@ import WalletTransactionHistory from "./WalletTransactionHistory";
 import { toast } from "react-toastify";
 import WalletSignMessage from "./WalletSignMessage";
 import WalletSendTransaction from "./WalletSendTransaction";
+import Image from "next/image";
 
 interface CustodialWallet {
   address: string;
@@ -33,10 +34,12 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
 
     return (
       <div className="relative group" onClick={handleFetchPrivateKey}>
-        <img
+        <Image
           src="/icons/key.svg"
           alt="key"
-          className="w-6 h-6 cursor-pointer"
+          width={24}
+          height={24}
+          className="cursor-pointer"
         />
       </div>
     );
@@ -48,9 +51,11 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
         className="relative group"
         onClick={() => setActiveOperation("signMessage")}
       >
-        <img
+        <Image
           src="/icons/sign.svg"
           alt="sign"
+          width={24}
+          height={24}
           className="w-6 h-6 cursor-pointer"
         />
       </div>
@@ -63,9 +68,11 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
         className="relative group"
         onClick={() => setActiveOperation("sendTransaction")}
       >
-        <img
+        <Image
           src="/icons/transaction.svg"
-          alt="sign"
+          alt="transaction"
+          width={24}
+          height={24}
           className="w-6 h-6 cursor-pointer"
         />
       </div>

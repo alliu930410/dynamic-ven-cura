@@ -1,5 +1,5 @@
 import { useAuthenticatedApiClient } from "@/services/apiClient";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { toast } from "react-toastify";
 
 interface FetchUserCustodialWalletsProps {
