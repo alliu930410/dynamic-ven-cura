@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
 import { baseSepolia, sepolia } from "viem/chains";
+import Image from "next/image";
 
 interface CustodialWallet {
   address: string;
@@ -47,7 +48,7 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
     };
 
     fetchTransactionHistory();
-  }, [selectedWallet, interactionToggle]);
+  }, [selectedWallet, interactionToggle, apiClient, chainId]);
 
   return (
     <div className="w-full h-full bg-gray-100 flex items-center justify-center mt-2">
@@ -93,9 +94,11 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
                     tx.transactionHash
                   }`}
                 >
-                  <img
+                  <Image
                     src="/icons/etherscan.svg"
                     alt="redirect"
+                    width={24}
+                    height={24}
                     className="w-6 h-6 cursor-pointer ml-2"
                   />
                 </a>

@@ -42,7 +42,7 @@ const DynamicApp = () => {
     };
 
     fetchToken();
-  }, [interactionToggle]);
+  }, [interactionToggle, setToken]);
 
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNetwork(event.target.value);
@@ -88,6 +88,7 @@ const DynamicApp = () => {
           setItems={setCustodialWallets}
         />
         <CreateCustodialWalletComponent
+          token={token}
           interactionToggle={interactionToggle}
           setInteractionToggle={setInteractionToggle}
         />

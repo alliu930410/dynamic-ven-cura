@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
-import WalletMessageHistory from "./WalletMessageHistory";
 import { isAddress } from "viem";
 import WalletTransactionHistory from "./WalletTransactionHistory";
 
