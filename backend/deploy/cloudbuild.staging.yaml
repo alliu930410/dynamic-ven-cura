@@ -49,6 +49,7 @@ steps:
   # Deploy container image to Cloud Run, and start api server
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
+    dir: /usr/src/app
     args:
       - run
       - deploy
