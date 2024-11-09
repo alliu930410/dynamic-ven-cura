@@ -2,6 +2,7 @@ import { useState } from "react";
 import WalletTransactionHistory from "./WalletTransactionHistory";
 import { toast } from "react-toastify";
 import WalletSignMessage from "./WalletSignMessage";
+import WalletSendTransaction from "./WalletSendTransaction";
 
 interface CustodialWallet {
   address: string;
@@ -53,15 +54,10 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
   };
 
   const SignTransactionComponent = () => {
-    const handleSignTransaction = (to: string, amount: number) => {
-      // TODO: hit API to sign the transaction
-      toast.error("Haven't implemented yet");
-    };
-
     return (
       <div
         className="relative group"
-        onClick={() => handleSignTransaction("0x123", 0.1)}
+        onClick={() => setActiveOperation("sendTransaction")}
       >
         <img
           src="/icons/transaction.svg"
@@ -91,6 +87,15 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
       {activeOperation === "signMessage" && (
         <div className="flex-grow flex">
           <WalletSignMessage selectedWallet={selectedWallet} />
+        </div>
+      )}
+
+      {activeOperation === "sendTransaction" && (
+        <div className="flex-grow flex">
+          <WalletSendTransaction
+            chainId={chainId}
+            selectedWallet={selectedWallet}
+          />
         </div>
       )}
     </div>

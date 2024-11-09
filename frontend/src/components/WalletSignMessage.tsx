@@ -41,8 +41,7 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
         `Signed Message "${response.data.message}" with wallet ${response.data.address}`
       );
     } catch (error: any) {
-      toast.error(`Error creating custodial wallet: ${error}`);
-      console.error("Error creating wallet:", error);
+      toast.error(`Error signing message: ${error}`);
     }
   };
 
