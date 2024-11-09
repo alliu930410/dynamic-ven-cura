@@ -3,6 +3,7 @@ import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
 import WalletMessageHistory from "./WalletMessageHistory";
 import { isAddress } from "viem";
+import WalletTransactionHistory from "./WalletTransactionHistory";
 
 interface CustodialWallet {
   address: string;
@@ -113,7 +114,10 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
         </div>
       )}
 
-      <WalletMessageHistory selectedWallet={selectedWallet} />
+      <WalletTransactionHistory
+        chainId={chainId}
+        selectedWallet={selectedWallet}
+      />
     </div>
   );
 };
