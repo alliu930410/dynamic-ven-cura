@@ -94,9 +94,9 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
                   }`}
                 >
                   <img
-                    src="/icons/redirect.svg"
+                    src="/icons/etherscan.svg"
                     alt="redirect"
-                    className="w-6 h-6 cursor-pointer"
+                    className="w-6 h-6 cursor-pointer ml-2"
                   />
                 </a>
               </div>
