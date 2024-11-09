@@ -104,8 +104,28 @@ export class GetWalletMessageHistoryDto
     >
 {
   @ApiProperty()
+  address: string;
+
+  @ApiProperty()
   message: string;
 
   @ApiProperty()
   createdAt: Date;
+}
+
+export class PaginatedMessageHistoryDto {
+  @ApiProperty()
+  page: number;
+
+  @ApiProperty()
+  pageSize: number;
+
+  @ApiProperty()
+  totalCount: number;
+
+  @ApiProperty()
+  totalPages: number;
+
+  @ApiProperty({ type: [GetWalletMessageHistoryDto] })
+  items: GetWalletMessageHistoryDto[];
 }

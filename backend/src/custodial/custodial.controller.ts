@@ -22,7 +22,7 @@ import {
 import {
   GetBalanceDto,
   GetCustodialWalletsDto,
-  GetWalletMessageHistoryDto,
+  PaginatedMessageHistoryDto,
   SendTransactionDto,
   SendTransactionReceiptDto,
   SignedMessageDto,
@@ -138,7 +138,7 @@ export class CustodialController {
   @ApiOkResponse({
     description:
       'Returns paginated messages for the specified custodial wallet address',
-    type: GetWalletMessageHistoryDto,
+    type: PaginatedMessageHistoryDto,
     isArray: true,
   })
   @ApiQuery({ name: 'limit', required: false, example: 20 })
