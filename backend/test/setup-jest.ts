@@ -1,8 +1,12 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-// Always use .env.test file for testing
-const envFileName = '.env.test';
+let envFileName;
+if (process.env.NODE_ENV_IS_CI === 'true') {
+  envFileName = '.env.test-ci';
+} else {
+  envFileName = '.env.test';
+}
 
 const envFilePath = path.resolve(process.cwd(), envFileName);
 dotenv.config({
