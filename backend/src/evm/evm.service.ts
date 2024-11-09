@@ -110,11 +110,8 @@ export class EVMService {
     // Filter for:
     // - Transactions sent by the address
     // - Sort by nonce in descending order
-    return transactionHistory
-      .filter(
-        (tx: any) =>
-          tx.from.toLocaleLowerCase() === address.toLocaleLowerCase(),
-      )
-      .sort((a: any, b: any) => b.nonce - a.nonce);
+    return transactionHistory.sort(
+      (a: any, b: any) => b.timeStamp - a.timeStamp,
+    );
   }
 }
