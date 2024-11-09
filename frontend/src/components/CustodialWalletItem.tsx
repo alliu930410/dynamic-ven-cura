@@ -3,7 +3,6 @@ import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
 import { baseSepolia, sepolia } from "viem/chains";
 import BlockiesSvg from "blockies-react-svg";
-import SelfCustody from "./SelfCustody";
 
 interface CustodialWallet {
   address: string;
@@ -59,10 +58,6 @@ const CustodialWalletItem: React.FC<CustodialWalletItemProps> = ({
           </p>
           <p>Created At: {new Date(createdAt).toLocaleDateString()}</p>
         </div>
-      </div>
-
-      <div className="flex-grow flex justify-center">
-        <SelfCustody />
       </div>
     </div>
   );

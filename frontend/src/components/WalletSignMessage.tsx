@@ -11,10 +11,14 @@ interface CustodialWallet {
 
 interface WalletSignMessageProps {
   selectedWallet: CustodialWallet;
+  interactionToggle: boolean;
+  setInteractionToggle: (value: boolean) => void;
 }
 
 const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
   selectedWallet,
+  interactionToggle,
+  setInteractionToggle,
 }) => {
   const apiClient = useAuthenticatedApiClient();
   const [message, setMessage] = useState<string | null>(null);
@@ -40,6 +44,8 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
       toast.success(
         `Signed Message "${response.data.message}" with wallet ${response.data.address}`
       );
+
+      setInteractionToggle(!interactionToggle);
     } catch (error: any) {
       if (error.response.status === 400 || error.response.status === 404) {
         toast.error(
@@ -77,7 +83,10 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
         </div>
       )}
 
-      <WalletMessageHistory selectedWallet={selectedWallet} />
+      <WalletMessageHistory
+        interactionToggle={interactionToggle}
+        selectedWallet={selectedWallet}
+      />
     </div>
   );
 };

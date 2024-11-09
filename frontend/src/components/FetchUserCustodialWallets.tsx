@@ -1,13 +1,16 @@
 import { useAuthenticatedApiClient } from "@/services/apiClient";
+import { useEffect } from "react";
 import { toast } from "react-toastify";
 
 interface FetchUserCustodialWalletsProps {
+  token: string | null;
+  interactionToggle: boolean;
   setItems: (item: any) => void;
 }
 
 const FetchUserCustodialWalletsComponent: React.FC<
   FetchUserCustodialWalletsProps
-> = ({ setItems }) => {
+> = ({ token, interactionToggle, setItems }) => {
   const apiClient = useAuthenticatedApiClient();
 
   const handleFetchUserCustodialWallets = async () => {
@@ -19,6 +22,13 @@ const FetchUserCustodialWalletsComponent: React.FC<
       console.error("Error fetching data:", error);
     }
   };
+
+  useEffect(() => {
+    // Fetch user custodial wallets when token is present
+    if (token) {
+      handleFetchUserCustodialWallets();
+    }
+  }, [token, interactionToggle]);
 
   return (
     <div className="flex flex-col items-center space-y-4 p-6 border border-gray-300 rounded-md shadow-md">

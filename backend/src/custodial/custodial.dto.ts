@@ -145,4 +145,10 @@ export class GetTransactionHistoryDto {
 
   @ApiProperty()
   sealed: boolean;
+
+  @ApiProperty()
+  amountInEth: string;
+
+  @ApiProperty()
+  createdAt: Date;
 }

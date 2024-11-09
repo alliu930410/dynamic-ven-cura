@@ -284,6 +284,8 @@ export class CustodialService {
         to: tx.to,
         transactionHash: tx.hash,
         nonce: Number(tx.nonce),
+        amountInEth: ethers.formatEther(tx.value),
+        createdAt: new Date(tx.timeStamp * 1000),
         sealed: true,
       }))
       .slice(0, 100);
@@ -316,9 +318,13 @@ export class CustodialService {
       to: tx.toAddress,
       transactionHash: tx.transactionHash,
       nonce: tx.nonce,
+      createdAt: tx.createdAt,
+      amountInEth: tx.amountInEth,
       sealed: false,
     }));
 
-    return [...onchainTransactions, ...serializedPendingTransactions];
+    return [...serializedPendingTransactions, ...onchainTransactions].sort(
+      (a, b) => b.createdAt - a.createdAt,
+    );
   }
 }
