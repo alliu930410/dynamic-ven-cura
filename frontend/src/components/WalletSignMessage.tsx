@@ -41,7 +41,13 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
         `Signed Message "${response.data.message}" with wallet ${response.data.address}`
       );
     } catch (error: any) {
-      toast.error(`Error signing message: ${error}`);
+      if (error.response.status === 400 || error.response.status === 404) {
+        toast.error(
+          `Error sending transaction: ${error.response.data.message}`
+        );
+      } else {
+        toast.error(`Error sending transaction: ${error}`);
+      }
     }
   };
 
