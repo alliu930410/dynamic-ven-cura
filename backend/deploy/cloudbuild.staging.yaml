@@ -5,6 +5,8 @@ steps:
     args:
       [
         'build',
+        '-f',
+        'backend/Dockerfile',
         '-t',
         'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA',
         '.',
