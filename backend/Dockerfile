@@ -2,12 +2,12 @@ FROM node:18.20.4
 
 # Create app directory
 WORKDIR /usr/src/app
-COPY package*.json ./
+COPY backend/package*.json ./
 
 # Enable Corepack to make Yarn available globally
 RUN corepack enable
 
-COPY . .
+COPY backend .
 RUN yarn install
 
 # Copying the cloud sql proxy script
