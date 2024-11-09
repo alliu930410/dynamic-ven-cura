@@ -25,6 +25,7 @@ const DynamicApp = () => {
   const [chainId, setChainId] = useState<number>(sepolia.id);
   const { token, setToken } = useDynamicToken();
   const [selectedWallet, setSelectedWallet] = useState<any | null>(null);
+  const [interactionToggle, setInteractionToggle] = useState<boolean>(false);
 
   const chainNameToId: Record<string, number> = {
     [sepolia.name]: sepolia.id,
@@ -41,7 +42,7 @@ const DynamicApp = () => {
     };
 
     fetchToken();
-  }, [setToken]);
+  }, [interactionToggle]);
 
   const handleNetworkChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setNetwork(event.target.value);
@@ -81,8 +82,15 @@ const DynamicApp = () => {
         </div>
         {/* Admin panel section */}
         <h2 className="text-lg font-bold">Admin Panel</h2>
-        <FetchUserCustodialWalletsComponent setItems={setCustodialWallets} />
-        <CreateCustodialWalletComponent />
+        <FetchUserCustodialWalletsComponent
+          token={token}
+          interactionToggle={interactionToggle}
+          setItems={setCustodialWallets}
+        />
+        <CreateCustodialWalletComponent
+          interactionToggle={interactionToggle}
+          setInteractionToggle={setInteractionToggle}
+        />
       </div>
 
       <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-lg w-2/3 ml-6 space-y-6">
@@ -101,7 +109,12 @@ const DynamicApp = () => {
 
       {/* Expandable Panel for Wallet-Specific Operations */}
       {selectedWallet && (
-        <WalletOperations chainId={chainId} selectedWallet={selectedWallet} />
+        <WalletOperations
+          interactionToggle={interactionToggle}
+          setInteractionToggle={setInteractionToggle}
+          chainId={chainId}
+          selectedWallet={selectedWallet}
+        />
       )}
     </div>
   );

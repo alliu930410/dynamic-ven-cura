@@ -2,7 +2,15 @@ import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const CreateCustodialWalletComponent: React.FC = () => {
+interface CreateCustodialWalletProps {
+  interactionToggle: boolean;
+  setInteractionToggle: (value: boolean) => void;
+}
+
+const CreateCustodialWalletComponent: React.FC<CreateCustodialWalletProps> = ({
+  interactionToggle,
+  setInteractionToggle,
+}) => {
   const apiClient = useAuthenticatedApiClient();
 
   const handleCreateCustodialWallet = async () => {
@@ -11,6 +19,7 @@ const CreateCustodialWalletComponent: React.FC = () => {
       toast.success(
         `Created ${response.data.nickName}: ${response.data.address}`
       );
+      setInteractionToggle(!interactionToggle);
     } catch (error: any) {
       toast.error(`Error creating custodial wallet: ${error}`);
       console.error("Error creating wallet:", error);

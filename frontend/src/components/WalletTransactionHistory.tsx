@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthenticatedApiClient } from "@/services/apiClient";
+import { toast } from "react-toastify";
 
 interface CustodialWallet {
   address: string;
@@ -10,11 +11,13 @@ interface CustodialWallet {
 interface WalletTransactionHistoryProps {
   chainId: number;
   selectedWallet: CustodialWallet;
+  interactionToggle: boolean;
 }
 
 const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
   selectedWallet,
   chainId,
+  interactionToggle,
 }) => {
   const apiClient = useAuthenticatedApiClient();
   const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
@@ -25,15 +28,14 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
         const response = await apiClient.get(
           `/custodial/wallet/transactions/${chainId}/${selectedWallet.address}`
         );
-        console.log("Transaction history:", response.data);
         setTransactionHistory(response.data);
       } catch (error: any) {
-        console.error("Error fetching data:", error);
+        toast.error("Error fetching data:", error);
       }
     };
 
     fetchTransactionHistory();
-  }, [selectedWallet]);
+  }, [selectedWallet, interactionToggle]);
 
   return (
     <div className="w-full h-full bg-gray-100 flex items-center justify-center mt-2">

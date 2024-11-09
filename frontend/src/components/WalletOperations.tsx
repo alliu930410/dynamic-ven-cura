@@ -13,11 +13,15 @@ interface CustodialWallet {
 interface WalletOperationsProps {
   chainId: number;
   selectedWallet: CustodialWallet;
+  interactionToggle: boolean;
+  setInteractionToggle: (value: boolean) => void;
 }
 
 const WalletOperations: React.FC<WalletOperationsProps> = ({
   selectedWallet,
   chainId,
+  interactionToggle,
+  setInteractionToggle,
 }) => {
   const [activeOperation, setActiveOperation] = useState<string>("history");
 
@@ -81,12 +85,17 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
           <WalletTransactionHistory
             chainId={chainId}
             selectedWallet={selectedWallet}
+            interactionToggle={interactionToggle}
           />
         </div>
       )}
       {activeOperation === "signMessage" && (
         <div className="flex-grow flex">
-          <WalletSignMessage selectedWallet={selectedWallet} />
+          <WalletSignMessage
+            selectedWallet={selectedWallet}
+            interactionToggle={interactionToggle}
+            setInteractionToggle={setInteractionToggle}
+          />
         </div>
       )}
 
@@ -95,6 +104,8 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
           <WalletSendTransaction
             chainId={chainId}
             selectedWallet={selectedWallet}
+            interactionToggle={interactionToggle}
+            setInteractionToggle={setInteractionToggle}
           />
         </div>
       )}

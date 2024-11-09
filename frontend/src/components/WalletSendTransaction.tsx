@@ -14,11 +14,15 @@ interface CustodialWallet {
 interface WalletSendTransactionProps {
   chainId: number;
   selectedWallet: CustodialWallet;
+  interactionToggle: boolean;
+  setInteractionToggle: (value: boolean) => void;
 }
 
 const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
   chainId,
   selectedWallet,
+  interactionToggle,
+  setInteractionToggle,
 }) => {
   const apiClient = useAuthenticatedApiClient();
   const [recipientAddress, setRecipientAddress] = useState<string>("");
@@ -62,6 +66,7 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
       toast.success(
         `Transaction submitted: send "${response.data.amountInEth}" value with wallet ${response.data.address} to ${response.data.to}`
       );
+      setInteractionToggle(!interactionToggle);
     } catch (error: any) {
       if (error.response.status === 400 || error.response.status === 404) {
         toast.error(
@@ -118,6 +123,7 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
       <WalletTransactionHistory
         chainId={chainId}
         selectedWallet={selectedWallet}
+        interactionToggle={interactionToggle}
       />
     </div>
   );
