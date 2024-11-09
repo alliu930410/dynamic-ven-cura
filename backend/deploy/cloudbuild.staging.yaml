@@ -70,9 +70,6 @@ steps:
         ETHERSCAN_API_KEY=ETHERSCAN_API_KEY:latest,
         DYNAMIC_PUBLIC_KEY=DYNAMIC_PUBLIC_KEY:latest
       - --set-cloudsql-instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura
-      - >-
-        --update-env-vars=^|||^
-          NODE_ENV=production|||
 
 # availableSecrets:
 #   secretManager:
