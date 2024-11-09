@@ -517,7 +517,16 @@ describe('CustodialController', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
-      expect(res.body).toHaveLength(0);
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(0);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 0,
+  "totalPages": 1,
+}
+`);
     });
 
     it('should return 1 page of 20 messages by default if wallet has signed messages and page & limit are not specified', async () => {
@@ -543,7 +552,16 @@ describe('CustodialController', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
-      expect(res.body).toHaveLength(20);
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(20);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 30,
+  "totalPages": 2,
+}
+`);
     });
 
     it('should return 30 messages altogether if limit is set to greater than 30', async () => {
@@ -572,7 +590,16 @@ describe('CustodialController', () => {
         })
         .expect(200);
 
-      expect(res.body).toHaveLength(30);
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(30);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 1,
+  "pageSize": 50,
+  "totalCount": 30,
+  "totalPages": 1,
+}
+`);
     });
 
     it('should return 5 messages for 2nd page if limit is set to greater than 5 and page set to 2', async () => {
@@ -602,7 +629,16 @@ describe('CustodialController', () => {
         })
         .expect(200);
 
-      expect(res.body).toHaveLength(5);
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(5);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 2,
+  "pageSize": 5,
+  "totalCount": 30,
+  "totalPages": 6,
+}
+`);
     });
   });
 });

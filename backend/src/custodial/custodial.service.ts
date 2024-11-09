@@ -262,7 +262,7 @@ export class CustodialService {
       items: messages.map((message) => ({
         address,
         message: message.message,
-        signature: message.signature,
+        createdAt: message.createdAt,
       })),
     };
   }
