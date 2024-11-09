@@ -7,7 +7,7 @@ async function bootstrap() {
 
   // Allow CORS for localhost:3003
   app.enableCors({
-    origin: 'http://localhost:3003',
+    origin: ['http://localhost:3003', 'https://dynamic-ven-cura.vercel.app'],
   });
 
   const config = new DocumentBuilder()
