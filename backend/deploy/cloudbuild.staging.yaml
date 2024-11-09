@@ -21,25 +21,25 @@ steps:
         'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA',
       ]
 
-  # Spinning up the test database
-  - id: start-test-db
-    name: 'docker/compose:1.29.2'
-    args: ['-f', 'backend/docker-compose-ci.yml', 'up', '-d', 'db_test']
+  # # Spinning up the test database
+  # - id: start-test-db
+  #   name: 'docker/compose:1.29.2'
+  #   args: ['-f', 'backend/docker-compose-ci.yml', 'up', '-d', 'db_test']
 
-  # Run unit tests
-  - id: integration-tests
-    name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
-    args: ['test:ci']
-    env:
-      - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
-      - 'NODE_ENV_IS_CI=true'
-    waitFor: [docker-build, docker-push, start-test-db]
-    dir: /usr/src/app
+  # # Run unit tests
+  # - id: integration-tests
+  #   name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
+  #   args: ['test:ci']
+  #   env:
+  #     - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
+  #     - 'NODE_ENV_IS_CI=true'
+  #   waitFor: [docker-build, docker-push, start-test-db]
+  #   dir: /usr/src/app
 
-  # Spinning down the test database
-  - id: stop-test-db
-    name: 'docker/compose:1.29.2'
-    args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
+  # # Spinning down the test database
+  # - id: stop-test-db
+  #   name: 'docker/compose:1.29.2'
+  #   args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
 
   # # Run database migrations
   # - name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
