@@ -3,11 +3,13 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface CreateCustodialWalletProps {
+  token: string | null;
   interactionToggle: boolean;
   setInteractionToggle: (value: boolean) => void;
 }
 
 const CreateCustodialWalletComponent: React.FC<CreateCustodialWalletProps> = ({
+  token,
   interactionToggle,
   setInteractionToggle,
 }) => {
@@ -30,7 +32,12 @@ const CreateCustodialWalletComponent: React.FC<CreateCustodialWalletProps> = ({
     <div className="flex flex-col items-center space-y-4 p-6 border border-gray-300 rounded-md shadow-md">
       <button
         onClick={handleCreateCustodialWallet}
-        className="px-6 py-2 bg-black text-white font-semibold rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50"
+        className={`px-6 py-2 text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50 
+        ${
+          !token
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-black hover:bg-gray-800"
+        }`}
       >
         Create a Custodial Wallet
       </button>

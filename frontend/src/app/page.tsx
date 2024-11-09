@@ -88,6 +88,7 @@ const DynamicApp = () => {
           setItems={setCustodialWallets}
         />
         <CreateCustodialWalletComponent
+          token={token}
           interactionToggle={interactionToggle}
           setInteractionToggle={setInteractionToggle}
         />
