@@ -6,6 +6,7 @@ import {
   InvalidChainIdException,
 } from './evm.exceptions';
 import { ethers } from 'ethers';
+import MyEtherscanProvider from './etherscan.provider';
 
 export enum SUPPORTED_CHAIN_IDS {
   SEPOLIA = sepolia.id,
@@ -97,4 +98,23 @@ export class EVMService {
    * TODO: implement
    */
   async getTransactionReceipt(txHash: string): Promise<any> {}
+
+  async getTransactionHistory(chainId: number, address: string): Promise<any> {
+    const etherscanProvider = new MyEtherscanProvider(
+      chainId,
+      process.env.ETHERSCAN_API_KEY,
+    );
+
+    const transactionHistory = await etherscanProvider.getHistory(address);
+
+    // Filter for:
+    // - Transactions sent by the address
+    // - Sort by nonce in descending order
+    return transactionHistory
+      .filter(
+        (tx: any) =>
+          tx.from.toLocaleLowerCase() === address.toLocaleLowerCase(),
+      )
+      .sort((a: any, b: any) => b.nonce - a.nonce);
+  }
 }

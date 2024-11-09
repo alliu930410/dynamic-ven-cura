@@ -129,3 +129,17 @@ export class PaginatedMessageHistoryDto {
   @ApiProperty({ type: [GetWalletMessageHistoryDto] })
   items: GetWalletMessageHistoryDto[];
 }
+
+export class GetTransactionHistoryDto {
+  @ApiProperty()
+  from: string;
+
+  @ApiProperty()
+  to: string;
+
+  @ApiProperty()
+  transactionHash: string;
+
+  @ApiProperty()
+  nonce: number;
+}

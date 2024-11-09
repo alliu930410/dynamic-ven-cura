@@ -5,6 +5,7 @@ import {
   CreateCustodialWalletDto,
   GetBalanceDto,
   GetCustodialWalletsDto,
+  GetTransactionHistoryDto,
   PaginatedMessageHistoryDto,
   SendTransactionReceiptDto,
   SignedMessageDto,
@@ -265,5 +266,25 @@ export class CustodialService {
         createdAt: message.createdAt,
       })),
     };
+  }
+
+  async getTransactionHistory(
+    chainId: number,
+    address: string,
+  ): Promise<GetTransactionHistoryDto[]> {
+    const transactions = await this.evmService.getTransactionHistory(
+      chainId,
+      address,
+    );
+
+    // Serialize the transactions to only include necessary fields and limit to 100 transactions
+    return transactions
+      .map((tx) => ({
+        from: tx.from,
+        to: tx.to,
+        transactionHash: tx.hash,
+        nonce: tx.nonce,
+      }))
+      .slice(0, 100);
   }
 }
