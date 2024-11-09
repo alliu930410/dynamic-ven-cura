@@ -16,6 +16,11 @@ const CreateCustodialWalletComponent: React.FC<CreateCustodialWalletProps> = ({
   const apiClient = useAuthenticatedApiClient();
 
   const handleCreateCustodialWallet = async () => {
+    if (!token) {
+      toast.error("Please log in first with Dynamic 😊");
+      return;
+    }
+
     try {
       const response = await apiClient.post("/custodial/wallet");
       toast.success(

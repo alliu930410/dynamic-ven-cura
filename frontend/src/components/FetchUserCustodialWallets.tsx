@@ -14,6 +14,11 @@ const FetchUserCustodialWalletsComponent: React.FC<
   const apiClient = useAuthenticatedApiClient();
 
   const handleFetchUserCustodialWallets = useCallback(async () => {
+    if (!token) {
+      toast.error("Please log in first with Dynamic 😊");
+      return;
+    }
+
     try {
       const response = await apiClient.get("/custodial/wallets");
       setItems(response.data);
@@ -21,7 +26,7 @@ const FetchUserCustodialWalletsComponent: React.FC<
       toast.error(`Error fetching custodial wallets: ${error}`);
       console.error("Error fetching data:", error);
     }
-  }, [apiClient, setItems]);
+  }, [apiClient, setItems, token]);
 
   useEffect(() => {
     if (token) {
