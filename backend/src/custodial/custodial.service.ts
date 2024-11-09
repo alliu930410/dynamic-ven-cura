@@ -5,6 +5,7 @@ import {
   CreateCustodialWalletDto,
   GetBalanceDto,
   GetCustodialWalletsDto,
+  GetTransactionHistoryDto,
   PaginatedMessageHistoryDto,
   SendTransactionReceiptDto,
   SignedMessageDto,
@@ -265,5 +266,59 @@ export class CustodialService {
         createdAt: message.createdAt,
       })),
     };
+  }
+
+  async getTransactionHistory(
+    chainId: number,
+    address: string,
+  ): Promise<GetTransactionHistoryDto[]> {
+    const transactions = await this.evmService.getTransactionHistory(
+      chainId,
+      address,
+    );
+
+    // Serialize the transactions to only include necessary fields and limit to 100 transactions
+    const onchainTransactions = transactions
+      .map((tx) => ({
+        from: tx.from,
+        to: tx.to,
+        transactionHash: tx.hash,
+        nonce: Number(tx.nonce),
+        sealed: true,
+      }))
+      .slice(0, 100);
+
+    // Fetch pending transactions from the database if transactionHash not in onchainTransactions
+    // and nonce is greater than or equal to the minimum nonce in onchainTransactions
+    const minNonce =
+      onchainTransactions.length > 0
+        ? Math.min(...onchainTransactions.map((tx) => Number(tx.nonce)))
+        : 0;
+
+    const pendingTransactions =
+      await this.prismaService.transactionHistory.findMany({
+        where: {
+          chainId,
+          custodialWallet: {
+            address,
+          },
+          transactionHash: {
+            notIn: onchainTransactions.map((tx: any) => tx.transactionHash),
+          },
+          nonce: {
+            gte: minNonce,
+          },
+        },
+      });
+
+    const serializedPendingTransactions = pendingTransactions.map((tx) => ({
+      from: address,
+      to: tx.toAddress,
+      transactionHash: tx.transactionHash,
+      nonce: tx.nonce,
+      sealed: false,
+    }));
+
+    return [...onchainTransactions, ...serializedPendingTransactions];
   }
 }

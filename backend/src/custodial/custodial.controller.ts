@@ -22,6 +22,7 @@ import {
 import {
   GetBalanceDto,
   GetCustodialWalletsDto,
+  GetTransactionHistoryDto,
   PaginatedMessageHistoryDto,
   SendTransactionDto,
   SendTransactionReceiptDto,
@@ -32,6 +33,7 @@ import { AuthenticatedDynamicUserDto } from 'src/auth/auth.dto';
 import { InvalidChainIdException } from 'src/evm/evm.exceptions';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import { WalletNotFoundException } from './custodial.exceptions';
+import { sepolia } from 'viem/chains';
 
 @Controller('custodial')
 export class CustodialController {
@@ -163,5 +165,25 @@ export class CustodialController {
       page,
       limit,
     );
+  }
+
+  /**
+   * Note that this needs special handling to do pagination as it's from EtherscanProvider
+   * we'll simplify it by only retuning a maximum of 100 latest transactions without pagination
+   */
+  @Get('/wallet/transactions/:chainId/:address')
+  @ApiOkResponse({
+    description:
+      'Returns all transactions for the specified custodial wallet address',
+    type: GetTransactionHistoryDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'chainId', required: true, example: sepolia.id })
+  @ApiException(() => [WalletNotFoundException])
+  async getWalletTransactionHistory(
+    @Param('address') address: string,
+    @Param('chainId', ParseIntPipe) chainId: number,
+  ) {
+    return this.custodialService.getTransactionHistory(chainId, address);
   }
 }
