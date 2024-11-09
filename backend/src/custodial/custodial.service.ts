@@ -323,6 +323,8 @@ export class CustodialService {
       sealed: false,
     }));
 
-    return [...onchainTransactions, ...serializedPendingTransactions];
+    return [...serializedPendingTransactions, ...onchainTransactions].sort(
+      (a, b) => b.nonce - a.nonce,
+    );
   }
 }
