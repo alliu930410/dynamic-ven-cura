@@ -33,25 +33,28 @@ const WalletMessageHistory: React.FC<WalletMessageHistoryProps> = ({
   }, []);
 
   return (
-    <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+    <div className="w-full h-full bg-gray-100 flex items-center justify-center mt-2">
       {messageHistory.length > 0 ? (
         <div className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
-          <h2 className="text-lg font-semibold text-gray-800 border-b p-4">
-            Message History
-          </h2>
-          <ul className="divide-y divide-gray-200">
-            {messageHistory.map((message, index) => (
-              <li key={index} className="p-4">
-                <p className="text-sm text-gray-600">
-                  <span className="font-bold">Message:</span> {message.message}
+          {messageHistory.map((message, index) => (
+            <div
+              key={index}
+              className="flex items-start p-4 border-b border-gray-200"
+            >
+              <div className="flex-1">
+                <p className="text-xs text-gray-500">
+                  {new Date(message.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
                 </p>
-                <p className="text-sm text-gray-500">
-                  <span className="font-bold">Signed:</span>{" "}
-                  {new Date(message.createdAt).toLocaleString()}
+                <p className="font-semibold text-gray-800 truncate">
+                  {message.message}
                 </p>
-              </li>
-            ))}
-          </ul>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <p className="text-gray-500 text-center">

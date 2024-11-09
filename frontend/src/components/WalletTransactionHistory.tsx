@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuthenticatedApiClient } from "@/services/apiClient";
 
 interface CustodialWallet {
   address: string;
@@ -15,22 +16,67 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
   selectedWallet,
   chainId,
 }) => {
+  const apiClient = useAuthenticatedApiClient();
   const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
 
+  useEffect(() => {
+    const fetchTransactionHistory = async () => {
+      try {
+        const response = await apiClient.get(
+          `/custodial/wallet/transactions/${chainId}/${selectedWallet.address}`
+        );
+        console.log("Transaction history:", response.data);
+        setTransactionHistory(response.data);
+      } catch (error: any) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchTransactionHistory();
+  }, []);
+
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full bg-gray-100 flex items-center justify-center mt-2">
       {transactionHistory.length > 0 ? (
-        <ul>
-          {transactionHistory.map((transaction, index) => (
-            <li key={index}>
-              <p>Transaction ID: {transaction.id}</p>
-              <p>Amount: {transaction.amount}</p>
-              <p>Date: {new Date(transaction.date).toLocaleDateString()}</p>
-            </li>
+        <div className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
+          {transactionHistory.map((tx, index) => (
+            <div
+              key={index}
+              className="flex items-center p-4 border-b border-gray-200"
+            >
+              <div className="flex-1">
+                <p className="text-xs text-gray-500">
+                  {new Date(tx.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </p>
+                <p className="font-semibold text-gray-800 truncate">
+                  {tx.message}
+                </p>
+                {tx.sealed ? (
+                  <p className="text-xs text-green-500">Sealed</p>
+                ) : (
+                  <p className="text-xs text-red-500">Pending</p>
+                )}
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-gray-800">
+                  {tx.from.toLowerCase() ===
+                  selectedWallet.address.toLowerCase()
+                    ? "-"
+                    : "+"}
+                  {tx.value} ETH
+                </p>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
-        <p>No transaction history available.</p>
+        <p className="text-gray-500 text-center">
+          No transaction history available.
+        </p>
       )}
     </div>
   );
