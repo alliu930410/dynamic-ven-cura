@@ -24,6 +24,7 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
   const [recipientAddress, setRecipientAddress] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [nonce, setNonce] = useState<number | null>(null);
 
   const handleSendTransaction = async () => {
     if (!recipientAddress) {
@@ -57,6 +58,7 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
         }
       );
       setTransactionHash(response.data.transactionHash);
+      setNonce(response.data.nonce);
       toast.success(
         `Transaction submitted: send "${response.data.amountInEth}" value with wallet ${response.data.address} to ${response.data.to}`
       );
@@ -107,10 +109,9 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
 
       {transactionHash && (
         <div className="mt-4 p-2 bg-gray-100 rounded-md border border-gray-300">
-          <p className="text-sm font-medium text-gray-800">
-            Executed Transaction:
-          </p>
+          <p className="text-sm font-medium text-gray-800">Sent Transaction:</p>
           <p className="text-sm text-gray-600 break-words">{transactionHash}</p>
+          <p className="text-sm text-gray-600 break-words">nonce: {nonce}</p>
         </div>
       )}
 
