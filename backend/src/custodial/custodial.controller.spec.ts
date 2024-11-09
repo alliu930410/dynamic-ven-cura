@@ -641,4 +641,48 @@ describe('CustodialController', () => {
 `);
     });
   });
+
+  describe('GET /custodial/wallet/transactions/:chainId/:address', () => {
+    it("should return 200 OK with empty array if there's no transaction history", async () => {
+      // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 0 transactions
+      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([]);
+
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/transactions/${sepolia.id}/0xWallet`)
+        .expect(200);
+
+      expect(res.body).toHaveLength(0);
+    });
+
+    it('should return 200 OK with transactions if wallet has transactions', async () => {
+      // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 3 transactions
+      // TODO: replace with lower-level mock on the EVMProvider if possible
+      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([
+        {
+          from: '0xWallet',
+          to: '0xOthers',
+          transactionHash: '0xHash1',
+          nonce: '2',
+        },
+        {
+          from: '0xWallet',
+          to: '0xOthers',
+          transactionHash: '0xHash2',
+          nonce: '1',
+        },
+        {
+          from: '0xWallet',
+          to: '0xOthers',
+          transactionHash: '0xHash3',
+          nonce: '0',
+        },
+      ]);
+
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/transactions/${sepolia.id}/0xWallet`)
+        .expect(200);
+
+      expect(res.body).toHaveLength(3);
+    });
+  });
 });
