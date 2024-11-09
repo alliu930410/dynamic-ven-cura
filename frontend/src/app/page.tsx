@@ -38,6 +38,8 @@ const DynamicApp = () => {
     const fetchToken = async () => {
       if (!authToken) {
         setToken(null);
+        setSelectedWallet(null);
+        setCustodialWallets([]);
       }
 
       const jwtToken = getAuthToken();
