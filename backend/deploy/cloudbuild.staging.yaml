@@ -45,6 +45,7 @@ steps:
   - name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
     args: ['migrate:staging:ci']
     secretEnv: ['DATABASE_URL']
+    dir: /usr/src/app
 
   # Deploy container image to Cloud Run, and start api server
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
