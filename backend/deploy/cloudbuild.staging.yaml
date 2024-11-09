@@ -31,7 +31,7 @@ steps:
     name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
     args: ['test:ci']
     env:
-      - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5433/ven_cura?connect_timeout=300'
+      - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
       - 'NODE_ENV=test'
     waitFor: [docker-build, docker-push, start-test-db]
     dir: /usr/src/app

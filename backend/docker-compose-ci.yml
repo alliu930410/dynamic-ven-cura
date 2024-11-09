@@ -4,7 +4,7 @@ services:
     restart: always
     container_name: ven_cura_test
     ports:
-      - '5433:5432'
+      - '5432:5432'
     environment:
       - POSTGRES_DB=ven_cura
       - POSTGRES_USER=postgres
