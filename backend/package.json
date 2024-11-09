@@ -24,7 +24,8 @@
     "prisma:generate": "npx prisma generate --schema=./prisma/schema.prisma",
     "migrate:dev": "dotenv -e .env.dev npx prisma migrate dev",
     "migrate:staging:ci": "/cloudsql/cloud_sql_proxy -instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura=tcp:5544 & sleep 2 && npx prisma migrate deploy",
-    "test": "dotenv -e .env.test -- yarn docker:test:up && yarn prisma:generate && dotenv -e .env.test -- prisma migrate deploy && dotenv -e .env.test -- jest --runInBand"
+    "test": "dotenv -e .env.test -- yarn docker:test:up && yarn prisma:generate && dotenv -e .env.test -- npx prisma migrate deploy && dotenv -e .env.test -- jest --runInBand",
+    "test:ci": "dotenv -e .env.test -- yarn prisma:generate && dotenv -e .env.test -- npx prisma migrate deploy && dotenv -e .env.test -- jest --runInBand"
   },
   "dependencies": {
     "@nanogiants/nestjs-swagger-api-exception-decorator": "^1.6.11",

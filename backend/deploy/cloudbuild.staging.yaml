@@ -29,7 +29,7 @@ steps:
   # Run unit tests
   - id: integration-tests
     name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
-    args: ['test']
+    args: ['test:ci']
     env:
       - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
       - 'NODE_ENV=test'
