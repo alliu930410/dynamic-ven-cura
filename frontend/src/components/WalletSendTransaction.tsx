@@ -60,7 +60,7 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
         `Transaction submitted: send "${response.data.amountInEth}" value with wallet ${response.data.address} to ${response.data.to}`
       );
     } catch (error: any) {
-      if (error.response.status === 400) {
+      if (error.response.status === 400 || error.response.status === 404) {
         toast.error(
           `Error sending transaction: ${error.response.data.message}`
         );
