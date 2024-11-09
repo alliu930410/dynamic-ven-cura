@@ -56,7 +56,7 @@ steps:
       - deploy
       - ven-cura-backend
       - --image
-      - us-west1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
+      - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
       - --args=start
       - --region
       - us-central1
