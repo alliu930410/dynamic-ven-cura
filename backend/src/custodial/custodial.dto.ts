@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CustodialWallet } from '@prisma/client';
+import { CustodialWallet, MessageHistory } from '@prisma/client';
 
 export class GetCustodialWalletsDto
   implements
@@ -94,4 +94,18 @@ export class SendTransactionReceiptDto {
 
   @ApiProperty()
   nonce: number;
+}
+
+export class GetWalletMessageHistoryDto
+  implements
+    Omit<
+      MessageHistory,
+      'id' | 'signature' | 'signatureIV' | 'custodialWalletId'
+    >
+{
+  @ApiProperty()
+  message: string;
+
+  @ApiProperty()
+  createdAt: Date;
 }

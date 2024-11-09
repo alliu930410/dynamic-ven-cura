@@ -221,8 +221,8 @@ export class CustodialService {
   async getMessageHistory(
     dynamicUserId: string,
     address: string,
-    page: number = 1, // default to first page
-    limit: number = 10, // default to 10 messages per page
+    page: number = 1, // default to first page if not specified
+    limit: number = 20, // default to 10 messages per page if not specified
   ): Promise<any[]> {
     const wallet = await this.getSigningWallet(dynamicUserId, address);
     if (!wallet) {
