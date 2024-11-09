@@ -683,18 +683,24 @@ describe('CustodialController', () => {
           to: '0xOthers',
           hash: '0xHash1',
           nonce: '2',
+          value: '1000000000000000000', // 1 ETH in wei
+          timeStamp: new Date().getTime() / 1000,
         },
         {
           from: mockCustodialWalletAddress,
           to: '0xOthers',
           hash: '0xHash2',
           nonce: '1',
+          value: '1000000000000000000', // 1 ETH in wei
+          timeStamp: new Date().getTime() / 1000,
         },
         {
           from: mockCustodialWalletAddress,
           to: '0xOthers',
           hash: '0xHash3',
           nonce: '0',
+          value: '1000000000000000000', // 1 ETH in wei
+          timeStamp: new Date().getTime() / 1000,
         },
       ]);
 
@@ -716,6 +722,8 @@ describe('CustodialController', () => {
           to: '0xOthers',
           hash: '0xHash0',
           nonce: '0',
+          value: '1000000000000000000', // 1 ETH in wei
+          timeStamp: new Date().getTime() / 1000,
         },
       ]);
 
