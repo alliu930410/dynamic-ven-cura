@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
+import WalletMessageHistory from "./WalletMessageHistory";
 
 interface CustodialWallet {
   address: string;
@@ -47,8 +48,9 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
 
   return (
     <div className="w-full h-full p-4">
-      <h3 className="text-lg font-bold mb-2">Sign A Message</h3>
       <h3 className="text-lg font-bold mb-4">{selectedWallet.nickName}</h3>
+      <h3 className="text-lg font-bold mb-2">Sign A Message</h3>
+
       <input
         type="text"
         placeholder="Enter message to sign"
@@ -69,6 +71,8 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
           <p className="text-sm text-gray-600 break-words">{signedMessage}</p>
         </div>
       )}
+
+      <WalletMessageHistory selectedWallet={selectedWallet} />
     </div>
   );
 };
