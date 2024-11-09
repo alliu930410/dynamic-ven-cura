@@ -5,6 +5,7 @@ import {
   CreateCustodialWalletDto,
   GetBalanceDto,
   GetCustodialWalletsDto,
+  PaginatedMessageHistoryDto,
   SendTransactionReceiptDto,
   SignedMessageDto,
 } from './custodial.dto';
@@ -216,5 +217,53 @@ export class CustodialService {
       console.log('Error sending transaction', error);
       throw error;
     }
+  }
+
+  async getMessageHistory(
+    dynamicUserId: string,
+    address: string,
+    page: number = 1, // default to first page if not specified
+    limit: number = 20, // default to 10 messages per page if not specified
+  ): Promise<PaginatedMessageHistoryDto> {
+    const wallet = await this.getSigningWallet(dynamicUserId, address);
+    if (!wallet) {
+      throw new WalletNotFoundException(address);
+    }
+
+    const [messages, totalCount] = await Promise.all([
+      this.prismaService.messageHistory.findMany({
+        where: {
+          custodialWallet: {
+            address,
+          },
+        },
+        skip: limit * ((page > 0 ? page : 1) - 1),
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      this.prismaService.messageHistory.count({
+        where: {
+          custodialWallet: {
+            address,
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = totalCount < limit ? 1 : Math.ceil(totalCount / limit);
+
+    return {
+      page,
+      pageSize: limit,
+      totalCount,
+      totalPages,
+      items: messages.map((message) => ({
+        address,
+        message: message.message,
+        createdAt: message.createdAt,
+      })),
+    };
   }
 }

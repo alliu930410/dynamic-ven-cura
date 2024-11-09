@@ -8,7 +8,6 @@ import { ethers, isAddress } from 'ethers';
 import { Alchemy, BigNumber } from 'alchemy-sdk';
 import { polygon, sepolia } from 'viem/chains';
 import { EVMService } from 'src/evm/evm.service';
-import { Prisma } from '@prisma/client';
 
 // Mock Alchemy SDK
 jest.mock('alchemy-sdk');
@@ -391,7 +390,7 @@ describe('CustodialController', () => {
         sub: mockDynamicUserId,
       });
 
-      // Prep: create the user with a custodial wallet in
+      // Prep: create the user with a custodial wallet in db
       const resWalletCreation = await request(app.getHttpServer())
         .post(`/custodial/wallet`)
         .set('Authorization', `Bearer ${token}`)
@@ -477,6 +476,169 @@ describe('CustodialController', () => {
 
       expect(res.body).toHaveProperty('transactionHash', '0xTRANSACTION');
       expect(res.body).toHaveProperty('nonce', 1);
+    });
+  });
+
+  describe('GET /custodial/wallet/messages/:address', () => {
+    let mockDynamicUserId: string = 'existing-user';
+    let mockCustodialWalletAddress: string;
+    let token: string;
+
+    beforeEach(async () => {
+      // Prep: generate a token that resolves to a user with a custodial wallet
+      token = generateJwtToken({
+        sub: mockDynamicUserId,
+      });
+
+      // Prep: create the user with a custodial wallet in db
+      const resWalletCreation = await request(app.getHttpServer())
+        .post(`/custodial/wallet`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(201);
+      mockCustodialWalletAddress = resWalletCreation.body.address;
+    });
+
+    it('should return 401 Unauthorized error if jwt token is missing', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/messages/${mockCustodialWalletAddress}`)
+        .expect(401);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "message": "Unauthorized",
+  "statusCode": 401,
+}
+`);
+    });
+
+    it("should return empty array if wallet hasn't signed any messages", async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/messages/${mockCustodialWalletAddress}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(0);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 0,
+  "totalPages": 1,
+}
+`);
+    });
+
+    it('should return 1 page of 20 messages by default if wallet has signed messages and page & limit are not specified', async () => {
+      // Prep: sign 30 messages for the custodial wallet
+      const messages = Array.from({ length: 30 }, (_, i) => ({
+        message: `test_message_${i}`,
+        signature: `test_signature_${i}`,
+        signatureIV: `test_signature_iv_${i}`,
+      }));
+      await prismaService.custodialWallet.update({
+        where: {
+          address: mockCustodialWalletAddress,
+        },
+        data: {
+          messageHistory: {
+            create: messages,
+          },
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/messages/${mockCustodialWalletAddress}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200);
+
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(20);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 1,
+  "pageSize": 20,
+  "totalCount": 30,
+  "totalPages": 2,
+}
+`);
+    });
+
+    it('should return 30 messages altogether if limit is set to greater than 30', async () => {
+      // Prep: sign 30 messages for the custodial wallet
+      const messages = Array.from({ length: 30 }, (_, i) => ({
+        message: `test_message_${i}`,
+        signature: `test_signature_${i}`,
+        signatureIV: `test_signature_iv_${i}`,
+      }));
+      await prismaService.custodialWallet.update({
+        where: {
+          address: mockCustodialWalletAddress,
+        },
+        data: {
+          messageHistory: {
+            create: messages,
+          },
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/messages/${mockCustodialWalletAddress}`)
+        .set('Authorization', `Bearer ${token}`)
+        .query({
+          limit: 50,
+        })
+        .expect(200);
+
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(30);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 1,
+  "pageSize": 50,
+  "totalCount": 30,
+  "totalPages": 1,
+}
+`);
+    });
+
+    it('should return 5 messages for 2nd page if limit is set to greater than 5 and page set to 2', async () => {
+      // Prep: sign 30 messages for the custodial wallet
+      const messages = Array.from({ length: 30 }, (_, i) => ({
+        message: `test_message_${i}`,
+        signature: `test_signature_${i}`,
+        signatureIV: `test_signature_iv_${i}`,
+      }));
+      await prismaService.custodialWallet.update({
+        where: {
+          address: mockCustodialWalletAddress,
+        },
+        data: {
+          messageHistory: {
+            create: messages,
+          },
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .get(`/custodial/wallet/messages/${mockCustodialWalletAddress}`)
+        .set('Authorization', `Bearer ${token}`)
+        .query({
+          limit: 5,
+          page: 2,
+        })
+        .expect(200);
+
+      const { items, ...rest } = res.body;
+      expect(items).toHaveLength(5);
+      expect(rest).toMatchInlineSnapshot(`
+{
+  "page": 2,
+  "pageSize": 5,
+  "totalCount": 30,
+  "totalPages": 6,
+}
+`);
     });
   });
 });

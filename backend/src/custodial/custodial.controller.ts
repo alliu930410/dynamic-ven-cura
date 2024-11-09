@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   Param,
   ParseIntPipe,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,10 +17,12 @@ import {
   ApiCreatedResponse,
   ApiHeaders,
   ApiOkResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import {
   GetBalanceDto,
   GetCustodialWalletsDto,
+  PaginatedMessageHistoryDto,
   SendTransactionDto,
   SendTransactionReceiptDto,
   SignedMessageDto,
@@ -126,6 +130,38 @@ export class CustodialController {
       address,
       to,
       amountInEth,
+    );
+  }
+
+  @Get('/wallet/messages/:address')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    description:
+      'Returns paginated messages for the specified custodial wallet address',
+    type: PaginatedMessageHistoryDto,
+    isArray: true,
+  })
+  @ApiQuery({ name: 'limit', required: false, example: 20 })
+  @ApiQuery({ name: 'page', required: false, example: 1 })
+  @ApiHeaders([
+    {
+      name: 'Authorization',
+      description: 'Must be a valid jwt token from Dynamic',
+    },
+  ])
+  @ApiException(() => [WalletNotFoundException])
+  async getWalletMessageHistory(
+    @Req() req: AuthenticatedDynamicUserDto,
+    @Param('address') address: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit?: number,
+  ) {
+    const { dynamicUserId } = req.user;
+    return this.custodialService.getMessageHistory(
+      dynamicUserId,
+      address,
+      page,
+      limit,
     );
   }
 }
