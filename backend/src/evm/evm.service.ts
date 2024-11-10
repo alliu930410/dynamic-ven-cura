@@ -33,7 +33,7 @@ export class EVMService {
 
     this.chainIdToProviderUrl = {
       [sepolia.id]: `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
-      [baseSepolia.id]: `https://base-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY_BE}`,
+      [baseSepolia.id]: `https://base-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
     };
   }
 
@@ -72,9 +72,13 @@ export class EVMService {
 
       return { transactionHash: tx.hash, nonce: tx.nonce };
     } catch (error: any) {
-      if (error.code === 'INSUFFICIENT_FUNDS') {
+      if (error?.code === 'INSUFFICIENT_FUNDS') {
         throw new InsufficientFundException();
-      } else if (error.error.code === 429 || error.error.code === -32000) {
+      } else if (
+        error?.error?.code === 429 ||
+        error?.error?.code === -32000 ||
+        error?.shortMessage.includes('could not coalesce error')
+      ) {
         // Hitting the rate limit of Alchemy API
         // either by hitting too frequent or trying to send too many transactions with the same payload in a short period of time
         throw new InteractionTooFrequentException();
