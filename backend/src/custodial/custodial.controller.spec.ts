@@ -515,7 +515,7 @@ describe('CustodialController', () => {
       expect(res.body).toMatchInlineSnapshot(`
 {
   "error": "HasPendingTransaction",
-  "message": "Transaction 0xHash1 is pending pending, please wait until it is confirmed",
+  "message": "Transaction 0xHash1 is pending, please wait until it is confirmed",
 }
 `);
     });

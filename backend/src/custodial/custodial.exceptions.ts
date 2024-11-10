@@ -13,7 +13,7 @@ export class HasPendingTransactionException extends BadRequestException {
   constructor(txHash: string) {
     super({
       error: 'HasPendingTransaction',
-      message: `Transaction ${txHash} is pending pending, please wait until it is confirmed`,
+      message: `Transaction ${txHash} is pending, please wait until it is confirmed`,
     });
   }
 }
