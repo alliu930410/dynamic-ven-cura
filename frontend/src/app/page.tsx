@@ -107,6 +107,7 @@ const DynamicApp = () => {
               walletItem={walletItem}
               chainId={chainId}
               interactionToggle={interactionToggle}
+              selectedWallet={selectedWallet}
             />
           </div>
         ))}
