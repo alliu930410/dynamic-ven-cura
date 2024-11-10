@@ -1,6 +1,7 @@
 "use client";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Image from "next/image";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -24,10 +25,12 @@ const DynamicApp = () => {
   const [custodialWallets, setCustodialWallets]: any[] = useState([]);
   const [network, setNetwork] = useState<string>(sepolia.name);
   const [chainId, setChainId] = useState<number>(sepolia.id);
-  const { setToken } = useDynamicToken();
+  const { token, setToken } = useDynamicToken();
   const [selectedWallet, setSelectedWallet] = useState<any | null>(null);
   const [interactionToggle, setInteractionToggle] = useState<boolean>(false);
   const { authToken } = useDynamicContext();
+  const [refreshBalanceToggle, setRefreshBalanceToggle] =
+    useState<boolean>(false);
 
   const chainNameToId: Record<string, number> = {
     [sepolia.name]: sepolia.id,
@@ -59,9 +62,38 @@ const DynamicApp = () => {
   };
 
   const handleWalletSelect = (wallet: any) => {
-    setSelectedWallet(wallet);
-    // // Fetch transaction history for the selected wallet
-    // fetchTransactionHistory(wallet.address);
+    if (selectedWallet && selectedWallet.address === wallet.address) {
+      setSelectedWallet(null);
+    } else {
+      setSelectedWallet(wallet);
+    }
+  };
+
+  const RefreshBalanceComponent = () => {
+    const handleRefreshBalance = () => {
+      if (!token) {
+        toast.error("Please log in first with Dynamic 😊");
+        return;
+      }
+
+      setRefreshBalanceToggle(!refreshBalanceToggle);
+    };
+
+    return (
+      <div className="flex flex-col items-center space-y-4 p-6 border border-gray-300 rounded-md shadow-md">
+        <button
+          onClick={handleRefreshBalance}
+          className={`px-6 py-2 text-white font-semibold rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50 
+        ${
+          !token
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-black hover:bg-gray-800"
+        }`}
+        >
+          Refresh Balance
+        </button>
+      </div>
+    );
   };
 
   return (
@@ -92,6 +124,7 @@ const DynamicApp = () => {
           interactionToggle={interactionToggle}
           setInteractionToggle={setInteractionToggle}
         />
+        <RefreshBalanceComponent />
       </div>
 
       <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-lg w-2/3 ml-6 space-y-6">
@@ -103,7 +136,11 @@ const DynamicApp = () => {
             key={walletItem.address}
             onClick={() => handleWalletSelect(walletItem)}
           >
-            <CustodialWalletItem walletItem={walletItem} chainId={chainId} />
+            <CustodialWalletItem
+              walletItem={walletItem}
+              chainId={chainId}
+              refreshBalanceToggle={refreshBalanceToggle}
+            />
           </div>
         ))}
       </div>

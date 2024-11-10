@@ -43,6 +43,9 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
           height={24}
           className="cursor-pointer"
         />
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          Non-custodial
+        </div>
       </div>
     );
   };
@@ -60,11 +63,14 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
           height={24}
           className="w-6 h-6 cursor-pointer"
         />
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          Sign Message
+        </div>
       </div>
     );
   };
 
-  const SignTransactionComponent = () => {
+  const SendTransactionComponent = () => {
     return (
       <div
         className="relative group"
@@ -77,6 +83,10 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
           height={24}
           className="w-6 h-6 cursor-pointer"
         />
+
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          Send Transaction
+        </div>
       </div>
     );
   };
@@ -85,7 +95,7 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
     <div className="bg-gray-100 border border-gray-300 p-4 rounded-lg shadow-lg w-1/4 ml-6 space-y-4">
       <div className="flex p-2 justify-between">
         <SignMessageComponent />
-        <SignTransactionComponent />
+        <SendTransactionComponent />
         <SelfCustodialComponent />
       </div>
 

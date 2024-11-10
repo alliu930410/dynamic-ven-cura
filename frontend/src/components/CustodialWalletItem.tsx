@@ -13,11 +13,13 @@ interface CustodialWallet {
 interface CustodialWalletItemProps {
   chainId: number;
   walletItem: CustodialWallet;
+  refreshBalanceToggle: boolean;
 }
 
 const CustodialWalletItem: React.FC<CustodialWalletItemProps> = ({
   chainId,
   walletItem,
+  refreshBalanceToggle,
 }) => {
   const apiClient = useAuthenticatedApiClient();
 
@@ -42,7 +44,7 @@ const CustodialWalletItem: React.FC<CustodialWalletItemProps> = ({
     };
 
     fetchBalance();
-  }, [chainId, address, apiClient]);
+  }, [chainId, address, apiClient, refreshBalanceToggle]);
 
   return (
     <div className="flex items-center justify-between p-4 border border-gray-300 rounded-md shadow-sm bg-white cursor-pointer hover:bg-gray-400 transition duration-200">
