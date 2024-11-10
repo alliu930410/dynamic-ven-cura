@@ -7,6 +7,7 @@ import {
 } from './evm.exceptions';
 import { ethers } from 'ethers';
 import MyEtherscanProvider from './etherscan.provider';
+import { InteractionTooFrequentException } from 'src/custodial/custodial.exceptions';
 
 export enum SUPPORTED_CHAIN_IDS {
   SEPOLIA = sepolia.id,
@@ -73,7 +74,13 @@ export class EVMService {
     } catch (error: any) {
       if (error.code === 'INSUFFICIENT_FUNDS') {
         throw new InsufficientFundException();
+      } else if (error.error.code === 429 || error.error.code === -32000) {
+        // Hitting the rate limit of Alchemy API
+        // either by hitting too frequent or trying to send too many transactions with the same payload in a short period of time
+        throw new InteractionTooFrequentException();
       }
+
+      throw error;
     }
   }
 

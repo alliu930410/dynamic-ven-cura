@@ -30,10 +30,14 @@ import {
   SignMessageDto,
 } from './custodial.dto';
 import { AuthenticatedDynamicUserDto } from 'src/auth/auth.dto';
-import { InvalidChainIdException } from 'src/evm/evm.exceptions';
+import {
+  InsufficientFundException,
+  InvalidChainIdException,
+} from 'src/evm/evm.exceptions';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import {
   HasPendingTransactionException,
+  InteractionTooFrequentException,
   WalletNotFoundException,
 } from './custodial.exceptions';
 import { sepolia } from 'viem/chains';
@@ -126,6 +130,8 @@ export class CustodialController {
     WalletNotFoundException,
     InvalidChainIdException,
     HasPendingTransactionException,
+    InsufficientFundException,
+    InteractionTooFrequentException,
   ])
   async sendTransaction(
     @Req() req: AuthenticatedDynamicUserDto,

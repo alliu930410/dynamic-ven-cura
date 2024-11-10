@@ -17,3 +17,12 @@ export class HasPendingTransactionException extends BadRequestException {
     });
   }
 }
+
+export class InteractionTooFrequentException extends BadRequestException {
+  constructor() {
+    super({
+      error: 'InteractionTooFrequent',
+      message: 'Interaction too frequent, please wait a moment',
+    });
+  }
+}
