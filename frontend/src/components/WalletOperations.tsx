@@ -16,6 +16,7 @@ interface WalletOperationsProps {
   selectedWallet: CustodialWallet;
   interactionToggle: boolean;
   setInteractionToggle: (value: boolean) => void;
+  custodialWallets: CustodialWallet[];
 }
 
 const WalletOperations: React.FC<WalletOperationsProps> = ({
@@ -23,6 +24,7 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
   chainId,
   interactionToggle,
   setInteractionToggle,
+  custodialWallets,
 }) => {
   const [activeOperation, setActiveOperation] = useState<string>("history");
 
@@ -113,6 +115,7 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
             selectedWallet={selectedWallet}
             interactionToggle={interactionToggle}
             setInteractionToggle={setInteractionToggle}
+            custodialWallets={custodialWallets}
           />
         </div>
       )}

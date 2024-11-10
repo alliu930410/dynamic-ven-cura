@@ -3,6 +3,7 @@ import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
 import { isAddress } from "viem";
 import WalletTransactionHistory from "./WalletTransactionHistory";
+import { baseSepolia, sepolia } from "viem/chains";
 
 interface CustodialWallet {
   address: string;
@@ -15,19 +16,27 @@ interface WalletSendTransactionProps {
   selectedWallet: CustodialWallet;
   interactionToggle: boolean;
   setInteractionToggle: (value: boolean) => void;
+  custodialWallets: CustodialWallet[];
 }
+
+const chainIdToNativeTokenName: Record<number, string> = {
+  [sepolia.id]: sepolia.nativeCurrency.name,
+  [baseSepolia.id]: baseSepolia.nativeCurrency.name,
+};
 
 const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
   chainId,
   selectedWallet,
   interactionToggle,
   setInteractionToggle,
+  custodialWallets,
 }) => {
   const apiClient = useAuthenticatedApiClient();
   const [recipientAddress, setRecipientAddress] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [nonce, setNonce] = useState<number | null>(null);
+  const [isCustomAddress, setIsCustomAddress] = useState<boolean>(false);
 
   const handleSendTransaction = async () => {
     if (!recipientAddress) {
@@ -63,7 +72,11 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
       setTransactionHash(response.data.transactionHash);
       setNonce(response.data.nonce);
       toast.success(
-        `Transaction submitted: send "${response.data.amountInEth}" value with wallet ${response.data.address} to ${response.data.to}`
+        `Transaction submitted: send "${
+          response.data.amountInEth
+        }" ${chainIdToNativeTokenName} with wallet ${
+          response.data?.nickName || response.data.address
+        } to ${response.data.to}`
       );
       setInteractionToggle(!interactionToggle);
     } catch (error: any) {
@@ -82,13 +95,38 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
       <h3 className="text-lg font-bold mb-4">{selectedWallet.nickName}</h3>
       <h3 className="text-lg font-bold mb-2">Send A Transaction</h3>
 
-      <input
-        type="text"
-        placeholder="Enter recipient"
-        value={recipientAddress}
-        onChange={(e) => setRecipientAddress(e.target.value)}
+      <select
+        onChange={(e) => {
+          const value = e.target.value;
+          if (value === "custom") {
+            setRecipientAddress("");
+            setIsCustomAddress(true);
+          } else {
+            setRecipientAddress(value);
+            setIsCustomAddress(false);
+          }
+        }}
         className="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out mb-4"
-      />
+      >
+        <option value="">Select recipient</option>
+        {custodialWallets
+          .filter((wallet) => wallet.address !== selectedWallet.address)
+          .map((wallet) => (
+            <option key={wallet.address} value={wallet.address}>
+              {wallet.nickName}
+            </option>
+          ))}
+        <option value="custom">Enter custom address</option>
+      </select>
+      {isCustomAddress && (
+        <input
+          type="text"
+          placeholder="Enter recipient address"
+          value={recipientAddress}
+          onChange={(e) => setRecipientAddress(e.target.value)}
+          className="w-full p-2 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+        />
+      )}
       <input
         type="text"
         placeholder="Enter amount"
