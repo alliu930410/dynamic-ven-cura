@@ -385,6 +385,11 @@ describe('CustodialController', () => {
         nonce: 1,
       });
 
+      // Mock evmService getTransactionReceipt to return a valid receipt always
+      jest.spyOn(evmService, 'getTransactionReceipt').mockResolvedValue({
+        status: 1,
+      } as any);
+
       // Prep: generate a token that resolves to a user with a custodial wallet
       token = generateJwtToken({
         sub: mockDynamicUserId,
@@ -476,6 +481,43 @@ describe('CustodialController', () => {
 
       expect(res.body).toHaveProperty('transactionHash', '0xTRANSACTION');
       expect(res.body).toHaveProperty('nonce', 1);
+    });
+
+    it('should throw 400 Bad Request error if user tries to send a transaction when there are pending transactions', async () => {
+      // Prep: mock database has a pending transaction for the wallet
+      jest.spyOn(evmService, 'getTransactionReceipt').mockResolvedValue(null);
+      await prismaService.transactionHistory.create({
+        data: {
+          custodialWallet: {
+            connect: {
+              address: mockCustodialWalletAddress,
+            },
+          },
+          transactionHash: '0xHash1',
+          nonce: 1,
+          chainId: sepolia.id,
+          toAddress: '0xOther',
+          amountInEth: 0.01,
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .post(`/custodial/wallet/sendTransaction`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          address: mockCustodialWalletAddress,
+          to: mockCustodialWalletAddress,
+          amountInEth: 0.01,
+          chainId: sepolia.id,
+        })
+        .expect(400);
+
+      expect(res.body).toMatchInlineSnapshot(`
+{
+  "error": "HasPendingTransaction",
+  "message": "Transaction 0xHash1 is pending pending, please wait until it is confirmed",
+}
+`);
     });
   });
 

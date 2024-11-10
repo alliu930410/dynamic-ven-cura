@@ -12,7 +12,7 @@ export class WalletNotFoundException extends NotFoundException {
 export class HasPendingTransactionException extends BadRequestException {
   constructor(txHash: string) {
     super({
-      error: 'Transaction pending',
+      error: 'HasPendingTransaction',
       message: `Transaction ${txHash} is pending pending, please wait until it is confirmed`,
     });
   }
