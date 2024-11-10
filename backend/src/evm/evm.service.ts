@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Alchemy, Network } from 'alchemy-sdk';
+import { Alchemy, Network, TransactionReceipt } from 'alchemy-sdk';
 import { sepolia, polygonAmoy, baseSepolia } from 'viem/chains';
 import {
   InsufficientFundException,
@@ -7,6 +7,7 @@ import {
 } from './evm.exceptions';
 import { ethers } from 'ethers';
 import MyEtherscanProvider from './etherscan.provider';
+import { InteractionTooFrequentException } from 'src/custodial/custodial.exceptions';
 
 export enum SUPPORTED_CHAIN_IDS {
   SEPOLIA = sepolia.id,
@@ -73,7 +74,13 @@ export class EVMService {
     } catch (error: any) {
       if (error.code === 'INSUFFICIENT_FUNDS') {
         throw new InsufficientFundException();
+      } else if (error.error.code === 429 || error.error.code === -32000) {
+        // Hitting the rate limit of Alchemy API
+        // either by hitting too frequent or trying to send too many transactions with the same payload in a short period of time
+        throw new InteractionTooFrequentException();
       }
+
+      throw error;
     }
   }
 
@@ -95,9 +102,18 @@ export class EVMService {
   /**
    * Retrieves the transaction receipt for a given transaction hash
    * @param txHash transaction hash
-   * TODO: implement
    */
-  async getTransactionReceipt(txHash: string): Promise<any> {}
+  async getTransactionReceipt(
+    chainId: number,
+    txHash: string,
+  ): Promise<TransactionReceipt | null> {
+    const alchemyClient = this.alchemyClients[chainId];
+    if (!alchemyClient) {
+      throw new InvalidChainIdException(chainId);
+    }
+
+    return await alchemyClient.core.getTransactionReceipt(txHash);
+  }
 
   async getTransactionHistory(chainId: number, address: string): Promise<any> {
     const etherscanProvider = new MyEtherscanProvider(
@@ -106,12 +122,6 @@ export class EVMService {
     );
 
     const transactionHistory = await etherscanProvider.getHistory(address);
-
-    // Filter for:
-    // - Transactions sent by the address
-    // - Sort by nonce in descending order
-    return transactionHistory.sort(
-      (a: any, b: any) => b.timeStamp - a.timeStamp,
-    );
+    return transactionHistory;
   }
 }

@@ -150,5 +150,14 @@ export class GetTransactionHistoryDto {
   amountInEth: string;
 
   @ApiProperty()
+  isInternal: boolean;
+
+  @ApiProperty()
+  nickName?: string | null;
+
+  @ApiProperty()
+  direction: 'incoming' | 'outgoing';
+
+  @ApiProperty()
   createdAt: Date;
 }

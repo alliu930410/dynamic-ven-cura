@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuthenticatedApiClient } from "@/services/apiClient";
+import { trimContent } from "@/utils/helper";
 
 interface CustodialWallet {
   address: string;
@@ -52,7 +53,7 @@ const WalletMessageHistory: React.FC<WalletMessageHistoryProps> = ({
                   })}
                 </p>
                 <p className="font-semibold text-gray-800 truncate">
-                  {message.message}
+                  {trimContent(message.message, 32)}
                 </p>
               </div>
             </div>

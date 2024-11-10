@@ -86,6 +86,7 @@ const DynamicApp = () => {
         <FetchUserCustodialWalletsComponent
           interactionToggle={interactionToggle}
           setItems={setCustodialWallets}
+          setInteractionToggle={setInteractionToggle}
         />
         <CreateCustodialWalletComponent
           interactionToggle={interactionToggle}
@@ -102,7 +103,12 @@ const DynamicApp = () => {
             key={walletItem.address}
             onClick={() => handleWalletSelect(walletItem)}
           >
-            <CustodialWalletItem walletItem={walletItem} chainId={chainId} />
+            <CustodialWalletItem
+              walletItem={walletItem}
+              chainId={chainId}
+              interactionToggle={interactionToggle}
+              selectedWallet={selectedWallet}
+            />
           </div>
         ))}
       </div>
@@ -114,6 +120,7 @@ const DynamicApp = () => {
           setInteractionToggle={setInteractionToggle}
           chainId={chainId}
           selectedWallet={selectedWallet}
+          custodialWallets={custodialWallets}
         />
       )}
     </div>

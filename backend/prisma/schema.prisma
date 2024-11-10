@@ -34,6 +34,7 @@ model CustodialWallet {
 
   messageHistory MessageHistory[]
   transactionHistory TransactionHistory[]
+  transactionHistoryAsRecipient TransactionHistory[] @relation(name: "TransactionHistoryToCustodialWalletRelation")
 
   createdAt     DateTime          @default(now())
 }
@@ -63,6 +64,10 @@ model TransactionHistory {
 
   custodialWalletId Int
   custodialWallet CustodialWallet @relation(fields: [custodialWalletId], references: [id], onDelete: Cascade)
+
+  isInternal Boolean @default(false)
+  toCustodialWalletId Int?
+  toCustodialWallet CustodialWallet? @relation(name: "TransactionHistoryToCustodialWalletRelation", fields: [toCustodialWalletId], references: [id])
 
   createdAt     DateTime          @default(now())
 }
