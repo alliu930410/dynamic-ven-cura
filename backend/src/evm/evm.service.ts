@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Alchemy, Network } from 'alchemy-sdk';
+import {
+  Alchemy,
+  AssetTransfersCategory,
+  Network,
+  SortingOrder,
+} from 'alchemy-sdk';
 import { sepolia, polygonAmoy, baseSepolia } from 'viem/chains';
 import {
   InsufficientFundException,
@@ -99,19 +104,39 @@ export class EVMService {
    */
   async getTransactionReceipt(txHash: string): Promise<any> {}
 
+  /**
+   * Get transaction history for a given address
+   * Ref: https://docs.alchemy.com/reference/alchemy-getassettransfers
+   * @param chainId
+   * @param address
+   * @returns
+   */
   async getTransactionHistory(chainId: number, address: string): Promise<any> {
-    const etherscanProvider = new MyEtherscanProvider(
-      chainId,
-      process.env.ETHERSCAN_API_KEY,
-    );
+    const alchemyClient = this.alchemyClients[chainId];
+    if (!alchemyClient) {
+      throw new InvalidChainIdException(chainId);
+    }
 
-    const transactionHistory = await etherscanProvider.getHistory(address);
+    const transactionHistory = await alchemyClient.core.getAssetTransfers({
+      fromAddress: address,
+      toAddress: address,
+      category: [
+        AssetTransfersCategory.INTERNAL,
+        AssetTransfersCategory.EXTERNAL,
+      ],
+      withMetadata: true,
+      order: SortingOrder.DESCENDING,
+    });
 
-    // Filter for:
-    // - Transactions sent by the address
-    // - Sort by nonce in descending order
-    return transactionHistory.sort(
-      (a: any, b: any) => b.timeStamp - a.timeStamp,
-    );
+    return transactionHistory.transfers.map((transfer) => {
+      return {
+        blockNumber: transfer.metadata.blockTimestamp,
+        from: transfer.from,
+        to: transfer.to,
+        value: transfer.value,
+        hash: transfer.hash,
+        asset: transfer.asset,
+      };
+    });
   }
 }
