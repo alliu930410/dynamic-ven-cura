@@ -12,6 +12,8 @@ import {
 } from './evm.exceptions';
 import { ethers } from 'ethers';
 import MyEtherscanProvider from './etherscan.provider';
+import { timeStamp } from 'console';
+import { EVMTransactionHistory } from './evm.interface';
 
 export enum SUPPORTED_CHAIN_IDS {
   SEPOLIA = sepolia.id,
@@ -102,7 +104,16 @@ export class EVMService {
    * @param txHash transaction hash
    * TODO: implement
    */
-  async getTransactionReceipt(txHash: string): Promise<any> {}
+  async getTransactionReceipt(chainId: number, txHash: string): Promise<any> {
+    const alchemyClient = this.alchemyClients[chainId];
+    if (!alchemyClient) {
+      throw new InvalidChainIdException(chainId);
+    }
+
+    const transactionReceipt = await alchemyClient.core.getTransaction(txHash);
+
+    return transactionReceipt;
+  }
 
   /**
    * Get transaction history for a given address
@@ -111,7 +122,10 @@ export class EVMService {
    * @param address
    * @returns
    */
-  async getTransactionHistory(chainId: number, address: string): Promise<any> {
+  async getTransactionHistory(
+    chainId: number,
+    address: string,
+  ): Promise<{ transactions: EVMTransactionHistory[]; minNonce: number }> {
     const alchemyClient = this.alchemyClients[chainId];
     if (!alchemyClient) {
       throw new InvalidChainIdException(chainId);
@@ -128,9 +142,9 @@ export class EVMService {
       order: SortingOrder.DESCENDING,
     });
 
-    return transactionHistory.transfers.map((transfer) => {
+    const transactions = transactionHistory.transfers.map((transfer) => {
       return {
-        blockNumber: transfer.metadata.blockTimestamp,
+        timeStamp: new Date(transfer.metadata.blockTimestamp),
         from: transfer.from,
         to: transfer.to,
         value: transfer.value,
@@ -138,5 +152,25 @@ export class EVMService {
         asset: transfer.asset,
       };
     });
+
+    // Get the earliest transaction nonce
+    let minNonce = 0;
+    const sortedTransactionsSentByAddress = transactions
+      .filter(
+        (transfer) =>
+          transfer.from.toLocaleLowerCase() === address.toLocaleLowerCase(),
+      )
+      .sort((a, b) => a.timeStamp.getTime() - b.timeStamp.getTime());
+
+    if (sortedTransactionsSentByAddress.length > 0) {
+      const minNonceTxHash = sortedTransactionsSentByAddress[0].hash;
+      const earliestTxReceipt = await this.getTransactionReceipt(
+        chainId,
+        minNonceTxHash,
+      );
+      minNonce = earliestTxReceipt.nonce || 0;
+    }
+
+    return { transactions, minNonce };
   }
 }

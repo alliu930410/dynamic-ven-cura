@@ -272,10 +272,8 @@ export class CustodialService {
     chainId: number,
     address: string,
   ): Promise<GetTransactionHistoryDto[]> {
-    const transactions = await this.evmService.getTransactionHistory(
-      chainId,
-      address,
-    );
+    const { transactions, minNonce } =
+      await this.evmService.getTransactionHistory(chainId, address);
 
     // Serialize the transactions to only include necessary fields and limit to 100 transactions
     const onchainTransactions = transactions
@@ -283,19 +281,11 @@ export class CustodialService {
         from: tx.from,
         to: tx.to,
         transactionHash: tx.hash,
-        nonce: Number(tx.nonce),
-        amountInEth: ethers.formatEther(tx.value),
-        createdAt: new Date(tx.timeStamp * 1000),
+        amountInEth: Number(tx.value),
+        createdAt: tx.timeStamp,
         sealed: true,
       }))
       .slice(0, 100);
-
-    // Fetch pending transactions from the database if transactionHash not in onchainTransactions
-    // and nonce is greater than or equal to the minimum nonce in onchainTransactions
-    const minNonce =
-      onchainTransactions.length > 0
-        ? Math.min(...onchainTransactions.map((tx) => Number(tx.nonce)))
-        : 0;
 
     const pendingTransactions =
       await this.prismaService.transactionHistory.findMany({
@@ -317,14 +307,13 @@ export class CustodialService {
       from: address,
       to: tx.toAddress,
       transactionHash: tx.transactionHash,
-      nonce: tx.nonce,
       createdAt: tx.createdAt,
-      amountInEth: tx.amountInEth,
+      amountInEth: Number(tx.amountInEth),
       sealed: false,
     }));
 
     return [...serializedPendingTransactions, ...onchainTransactions].sort(
-      (a, b) => b.createdAt - a.createdAt,
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
   }
 }

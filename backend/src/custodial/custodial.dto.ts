@@ -141,13 +141,10 @@ export class GetTransactionHistoryDto {
   transactionHash: string;
 
   @ApiProperty()
-  nonce: number;
-
-  @ApiProperty()
   sealed: boolean;
 
   @ApiProperty()
-  amountInEth: string;
+  amountInEth: number;
 
   @ApiProperty()
   createdAt: Date;
