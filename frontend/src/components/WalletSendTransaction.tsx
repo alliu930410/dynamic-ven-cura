@@ -73,9 +73,11 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
       setNonce(response.data.nonce);
       console.log(response.data);
       toast.success(
-        `Transaction submitted: send ${amount} ${chainIdToNativeTokenName} with wallet ${
-          response.data?.nickName || response.data.address
-        } to ${response.data.to}`
+        `Transaction submitted: send ${response.data.amountInEth} ${
+          chainIdToNativeTokenName[chainId]
+        } with wallet ${response.data?.nickName || response.data.address} to ${
+          response.data.to
+        }`
       );
       setInteractionToggle(!interactionToggle);
     } catch (error: any) {
