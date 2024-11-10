@@ -156,5 +156,8 @@ export class GetTransactionHistoryDto {
   nickName?: string | null;
 
   @ApiProperty()
+  direction: 'incoming' | 'outgoing';
+
+  @ApiProperty()
   createdAt: Date;
 }

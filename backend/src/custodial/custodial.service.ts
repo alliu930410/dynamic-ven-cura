@@ -301,9 +301,40 @@ export class CustodialService {
         nonce: Number(tx.nonce),
         amountInEth: ethers.formatEther(tx.value),
         createdAt: new Date(tx.timeStamp * 1000),
+        direction:
+          tx.from.toLocaleLowerCase() === address.toLocaleLowerCase()
+            ? 'outgoing'
+            : 'incoming',
         sealed: true,
       }))
       .slice(0, 100);
+
+    // Mark internal transactions and include nickName if the transaction is internal
+    const dbOnchainTransactions =
+      await this.prismaService.transactionHistory.findMany({
+        where: {
+          chainId,
+          custodialWallet: {
+            address,
+          },
+          transactionHash: {
+            in: onchainTransactions.map((tx: any) => tx.transactionHash),
+          },
+        },
+        include: {
+          toCustodialWallet: true,
+        },
+      });
+
+    onchainTransactions.forEach((tx: any) => {
+      const dbTx = dbOnchainTransactions.find(
+        (dbTx) => dbTx.transactionHash === tx.transactionHash,
+      );
+      if (dbTx) {
+        tx.isInternal = dbTx.isInternal;
+        tx.nickName = dbTx.toCustodialWallet?.nickName;
+      }
+    });
 
     // Fetch pending transactions from the database if transactionHash not in onchainTransactions
     // and nonce is greater than or equal to the minimum nonce in onchainTransactions
@@ -326,6 +357,9 @@ export class CustodialService {
             gte: minNonce,
           },
         },
+        include: {
+          toCustodialWallet: true,
+        },
       });
 
     const serializedPendingTransactions = pendingTransactions.map((tx) => ({
@@ -336,6 +370,8 @@ export class CustodialService {
       createdAt: tx.createdAt,
       amountInEth: tx.amountInEth,
       isInternal: tx.isInternal,
+      nickName: tx.toCustodialWallet?.nickName,
+      direction: 'outgoing',
       sealed: false,
     }));
 
