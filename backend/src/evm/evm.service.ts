@@ -115,12 +115,6 @@ export class EVMService {
     );
 
     const transactionHistory = await etherscanProvider.getHistory(address);
-
-    // Filter for:
-    // - Transactions sent by the address
-    // - Sort by nonce in descending order
-    return transactionHistory.sort(
-      (a: any, b: any) => b.timeStamp - a.timeStamp,
-    );
+    return transactionHistory;
   }
 }
