@@ -3,6 +3,7 @@ import { useAuthenticatedApiClient } from "@/services/apiClient";
 import { toast } from "react-toastify";
 import { baseSepolia, sepolia } from "viem/chains";
 import Image from "next/image";
+import { trimContent } from "@/utils/helper";
 
 interface CustodialWallet {
   address: string;
@@ -12,13 +13,14 @@ interface CustodialWallet {
 
 interface TransactionHistoryProps {
   createdAt: string | Date;
-  message: string;
   sealed: boolean;
   direction: "outgoing" | "incoming";
   amountInEth: string;
   transactionHash: string;
   isInternal: boolean;
   nickName?: string | null;
+  from: string;
+  to: string;
 }
 
 interface TransactionProps {
@@ -72,6 +74,13 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
     chainId,
     networkToEtherscanPrefix,
   }: TransactionProps) => {
+    const txDirection = tx.direction === "outgoing" ? "to" : "from";
+    const counterPartName = trimContent(
+      tx?.nickName ? tx.nickName : tx.direction === "outgoing" ? tx.to : tx.from
+    );
+
+    console.log("counterPartName", counterPartName);
+
     return (
       <div
         className={`flex flex-col space-y-2 p-4 border-b border-gray-200 w-full h-full ${
@@ -86,7 +95,6 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
               year: "numeric",
             })}
           </p>
-          <p className="font-semibold text-gray-800 truncate">{tx.message}</p>
           <p
             className={`text-xs ${
               tx.sealed ? "text-green-500" : "text-red-500"
@@ -94,11 +102,9 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
           >
             {tx.sealed ? "Sealed" : "Pending"}
           </p>
-          {tx.nickName && (
-            <p className="text-xs text-gray-600">{`${
-              tx.direction === "outgoing" ? "to:" : "from:"
-            }: ${tx.nickName}`}</p>
-          )}
+          <p className="text-xs text-gray-600">
+            {`${txDirection}: ${counterPartName}`}
+          </p>
         </div>
         <div className="flex items-center justify-between">
           <p className="text-sm font-semibold text-gray-800">
