@@ -4,5 +4,4 @@ export class EVMTransactionHistory {
   to: string;
   value: number;
   hash: string;
-  asset: string;
 }

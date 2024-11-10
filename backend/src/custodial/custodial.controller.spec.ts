@@ -663,7 +663,9 @@ describe('CustodialController', () => {
 
     it("should return 200 OK with empty array if there's no transaction history", async () => {
       // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 0 transactions
-      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([]);
+      jest
+        .spyOn(evmService, 'getTransactionHistory')
+        .mockResolvedValue({ transactions: [], minNonce: 0 });
 
       const res = await request(app.getHttpServer())
         .get(
@@ -677,32 +679,32 @@ describe('CustodialController', () => {
     it('should return 200 OK with transactions if wallet has transactions', async () => {
       // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 3 transactions
       // TODO: replace with lower-level mock on the EVMProvider if possible
-      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([
-        {
-          from: mockCustodialWalletAddress,
-          to: '0xOthers',
-          hash: '0xHash1',
-          nonce: '2',
-          value: '1000000000000000000', // 1 ETH in wei
-          timeStamp: new Date().getTime() / 1000,
-        },
-        {
-          from: mockCustodialWalletAddress,
-          to: '0xOthers',
-          hash: '0xHash2',
-          nonce: '1',
-          value: '1000000000000000000', // 1 ETH in wei
-          timeStamp: new Date().getTime() / 1000,
-        },
-        {
-          from: mockCustodialWalletAddress,
-          to: '0xOthers',
-          hash: '0xHash3',
-          nonce: '0',
-          value: '1000000000000000000', // 1 ETH in wei
-          timeStamp: new Date().getTime() / 1000,
-        },
-      ]);
+      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue({
+        transactions: [
+          {
+            from: mockCustodialWalletAddress,
+            to: '0xOthers',
+            hash: '0xHash1',
+            value: 1, // 1 ETH
+            timeStamp: new Date(),
+          },
+          {
+            from: mockCustodialWalletAddress,
+            to: '0xOthers',
+            hash: '0xHash2',
+            value: 1, // 1 ETH
+            timeStamp: new Date(),
+          },
+          {
+            from: mockCustodialWalletAddress,
+            to: '0xOthers',
+            hash: '0xHash3',
+            value: 1, // 1 ETH
+            timeStamp: new Date(),
+          },
+        ],
+        minNonce: 0,
+      });
 
       const res = await request(app.getHttpServer())
         .get(
@@ -716,16 +718,18 @@ describe('CustodialController', () => {
     it('should return 200 OK with transactions if wallet has both sealed & pending transactions', async () => {
       // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 1 transaction
       // TODO: replace with lower-level mock on the EVMProvider if possible
-      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([
-        {
-          from: mockCustodialWalletAddress,
-          to: '0xOthers',
-          hash: '0xHash0',
-          nonce: '0',
-          value: '1000000000000000000', // 1 ETH in wei
-          timeStamp: new Date().getTime() / 1000,
-        },
-      ]);
+      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue({
+        transactions: [
+          {
+            from: mockCustodialWalletAddress,
+            to: '0xOthers',
+            hash: '0xHash0',
+            value: 1, // 1 ETH
+            timeStamp: new Date(),
+          },
+        ],
+        minNonce: 0,
+      });
 
       // Prep: mock database has a pending transaction for the wallet
       await prismaService.transactionHistory.create({

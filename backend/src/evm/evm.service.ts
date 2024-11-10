@@ -5,14 +5,12 @@ import {
   Network,
   SortingOrder,
 } from 'alchemy-sdk';
-import { sepolia, polygonAmoy, baseSepolia } from 'viem/chains';
+import { sepolia, baseSepolia } from 'viem/chains';
 import {
   InsufficientFundException,
   InvalidChainIdException,
 } from './evm.exceptions';
 import { ethers } from 'ethers';
-import MyEtherscanProvider from './etherscan.provider';
-import { timeStamp } from 'console';
 import { EVMTransactionHistory } from './evm.interface';
 
 export enum SUPPORTED_CHAIN_IDS {
@@ -149,7 +147,6 @@ export class EVMService {
         to: transfer.to,
         value: transfer.value,
         hash: transfer.hash,
-        asset: transfer.asset,
       };
     });
 
