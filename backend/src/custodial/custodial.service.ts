@@ -314,12 +314,21 @@ export class CustodialService {
       await this.prismaService.transactionHistory.findMany({
         where: {
           chainId,
-          custodialWallet: {
-            address,
-          },
           transactionHash: {
             in: onchainTransactions.map((tx: any) => tx.transactionHash),
           },
+          OR: [
+            {
+              custodialWallet: {
+                address,
+              },
+            },
+            {
+              toCustodialWallet: {
+                address,
+              },
+            },
+          ],
         },
         include: {
           toCustodialWallet: true,
@@ -330,10 +339,9 @@ export class CustodialService {
       const dbTx = dbOnchainTransactions.find(
         (dbTx) => dbTx.transactionHash === tx.transactionHash,
       );
-      if (dbTx) {
-        tx.isInternal = dbTx.isInternal;
-        tx.nickName = dbTx.toCustodialWallet?.nickName;
-      }
+
+      tx.isInternal = dbTx?.isInternal || false;
+      tx.nickName = dbTx?.toCustodialWallet?.nickName;
     });
 
     // Fetch pending transactions from the database if transactionHash not in onchainTransactions
