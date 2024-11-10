@@ -43,7 +43,7 @@ steps:
 
   # Run database migrations
   - id: run-db-migrations
-    name: 'us-west1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
+    name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
     args: ['migrate:staging:ci']
     secretEnv: ['DATABASE_URL']
 
