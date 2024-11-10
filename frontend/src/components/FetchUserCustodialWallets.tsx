@@ -6,12 +6,11 @@ import { toast } from "react-toastify";
 interface FetchUserCustodialWalletsProps {
   interactionToggle: boolean;
   setItems: (item: any) => void;
-  setInteractionToggle: (toggle: boolean) => void;
 }
 
 const FetchUserCustodialWalletsComponent: React.FC<
   FetchUserCustodialWalletsProps
-> = ({ interactionToggle, setItems, setInteractionToggle }) => {
+> = ({ interactionToggle, setItems }) => {
   const apiClient = useAuthenticatedApiClient();
   const { token } = useDynamicToken();
 
@@ -24,7 +23,6 @@ const FetchUserCustodialWalletsComponent: React.FC<
     try {
       const response = await apiClient.get("/custodial/wallets");
       setItems(response.data);
-      setInteractionToggle(!interactionToggle);
     } catch (error: any) {
       toast.error(`Error fetching custodial wallets: ${error}`);
       console.error("Error fetching data:", error);

@@ -1,7 +1,6 @@
 "use client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Image from "next/image";
 
 import React, { useEffect, useState } from "react";
 import {
@@ -118,7 +117,6 @@ const DynamicApp = () => {
         <FetchUserCustodialWalletsComponent
           interactionToggle={interactionToggle}
           setItems={setCustodialWallets}
-          setInteractionToggle={setInteractionToggle}
         />
         <CreateCustodialWalletComponent
           interactionToggle={interactionToggle}
