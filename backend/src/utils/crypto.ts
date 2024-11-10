@@ -8,7 +8,7 @@ if (!WALLET_ENCRYPTION_KEY) {
 }
 
 // Convert WALLET_ENCRYPTION_KEY to a buffer
-const encryptionKey = Buffer.from(WALLET_ENCRYPTION_KEY, 'hex');
+const WALLET_ENCRYPTION_KEY_BUFFER = Buffer.from(WALLET_ENCRYPTION_KEY, 'hex');
 const ALGORITHM = 'aes-256-cbc';
 const IV_LENGTH = 16;
 
@@ -26,7 +26,7 @@ export const encryptKey = (
   const initializationVector = iv || crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv(
     ALGORITHM,
-    encryptionKey,
+    WALLET_ENCRYPTION_KEY_BUFFER,
     initializationVector,
   );
 
@@ -53,7 +53,7 @@ export const decryptKey = (encryptedKey: string, iv: string): string => {
 
   const decipher = crypto.createDecipheriv(
     ALGORITHM,
-    encryptionKey,
+    WALLET_ENCRYPTION_KEY_BUFFER,
     initializationVector,
   );
 
