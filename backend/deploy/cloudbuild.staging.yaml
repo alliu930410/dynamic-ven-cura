@@ -41,6 +41,13 @@ steps:
     name: 'docker/compose:1.29.2'
     args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
 
+  # Run database migrations
+  - id: run-db-migrations
+    name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
+    args: ['migrate:staging:ci']
+    secretEnv: ['DATABASE_URL']
+    dir: /usr/src/app
+
   # Deploy container image to Cloud Run, run migration, and start api server
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
@@ -51,7 +58,7 @@ steps:
       - ven-cura-backend
       - --image
       - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
-      - --args=start
+      - --args=start:prod
       - --region
       - us-central1
       - --port=3000
@@ -64,6 +71,11 @@ steps:
         ETHERSCAN_API_KEY=ETHERSCAN_API_KEY:latest,
         DYNAMIC_PUBLIC_KEY=DYNAMIC_PUBLIC_KEY:latest
       - --set-cloudsql-instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura
+
+availableSecrets:
+  secretManager:
+    - versionName: projects/162382446001/secrets/DATABASE_URL_CI/versions/latest
+      env: 'DATABASE_URL'
 
 images:
   - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
