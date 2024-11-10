@@ -15,7 +15,10 @@ import { decryptKey, encryptKey } from 'src/utils/crypto';
 import { EVMService } from 'src/evm/evm.service';
 import { Prisma } from '@prisma/client';
 import { ethers, Provider } from 'ethers';
-import { WalletNotFoundException } from './custodial.exceptions';
+import {
+  HasPendingTransactionException,
+  WalletNotFoundException,
+} from './custodial.exceptions';
 
 @Injectable()
 export class CustodialService {
@@ -176,6 +179,31 @@ export class CustodialService {
     to: string,
     amountInEth: number,
   ): Promise<SendTransactionReceiptDto> {
+    // Check if user has a last pending transaction that's not sealed
+    const lastPendingTransaction =
+      await this.prismaService.transactionHistory.findFirst({
+        where: {
+          chainId,
+          custodialWallet: {
+            address,
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+    if (lastPendingTransaction) {
+      const txReceipt = await this.evmService.getTransactionReceipt(
+        chainId,
+        lastPendingTransaction.transactionHash,
+      );
+
+      if (!txReceipt) {
+        throw new HasPendingTransactionException(
+          lastPendingTransaction.transactionHash,
+        );
+      }
+    }
     const provider = await this.evmService.getProviderForChainId(chainId);
     const signingWallet = await this.getSigningWallet(
       dynamicUserId,

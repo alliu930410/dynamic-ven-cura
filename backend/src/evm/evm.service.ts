@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Alchemy, Network } from 'alchemy-sdk';
+import { Alchemy, Network, TransactionReceipt } from 'alchemy-sdk';
 import { sepolia, polygonAmoy, baseSepolia } from 'viem/chains';
 import {
   InsufficientFundException,
@@ -95,9 +95,18 @@ export class EVMService {
   /**
    * Retrieves the transaction receipt for a given transaction hash
    * @param txHash transaction hash
-   * TODO: implement
    */
-  async getTransactionReceipt(txHash: string): Promise<any> {}
+  async getTransactionReceipt(
+    chainId: number,
+    txHash: string,
+  ): Promise<TransactionReceipt | null> {
+    const alchemyClient = this.alchemyClients[chainId];
+    if (!alchemyClient) {
+      throw new InvalidChainIdException(chainId);
+    }
+
+    return await alchemyClient.core.getTransactionReceipt(txHash);
+  }
 
   async getTransactionHistory(chainId: number, address: string): Promise<any> {
     const etherscanProvider = new MyEtherscanProvider(

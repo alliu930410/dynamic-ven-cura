@@ -32,7 +32,10 @@ import {
 import { AuthenticatedDynamicUserDto } from 'src/auth/auth.dto';
 import { InvalidChainIdException } from 'src/evm/evm.exceptions';
 import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
-import { WalletNotFoundException } from './custodial.exceptions';
+import {
+  HasPendingTransactionException,
+  WalletNotFoundException,
+} from './custodial.exceptions';
 import { sepolia } from 'viem/chains';
 
 @Controller('custodial')
@@ -119,7 +122,11 @@ export class CustodialController {
       'Send a basic transaction to the specified chain with the specified wallet',
     type: SendTransactionReceiptDto,
   })
-  @ApiException(() => [WalletNotFoundException, InvalidChainIdException])
+  @ApiException(() => [
+    WalletNotFoundException,
+    InvalidChainIdException,
+    HasPendingTransactionException,
+  ])
   async sendTransaction(
     @Req() req: AuthenticatedDynamicUserDto,
     @Body() sendTransactionDto: SendTransactionDto,
