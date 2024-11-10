@@ -25,7 +25,7 @@ export class EVMService {
         network: Network.ETH_SEPOLIA,
       }),
       [baseSepolia.id]: new Alchemy({
-        apiKey: process.env.ALCHEMY_API_KEY_BE,
+        apiKey: process.env.ALCHEMY_API_KEY,
         network: Network.BASE_SEPOLIA,
       }),
     };
