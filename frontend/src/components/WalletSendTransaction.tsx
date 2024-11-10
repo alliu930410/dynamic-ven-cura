@@ -71,10 +71,9 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
       );
       setTransactionHash(response.data.transactionHash);
       setNonce(response.data.nonce);
+      console.log(response.data);
       toast.success(
-        `Transaction submitted: send "${
-          response.data.amountInEth
-        }" ${chainIdToNativeTokenName} with wallet ${
+        `Transaction submitted: send ${amount} ${chainIdToNativeTokenName} with wallet ${
           response.data?.nickName || response.data.address
         } to ${response.data.to}`
       );

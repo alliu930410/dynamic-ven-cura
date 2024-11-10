@@ -10,6 +10,23 @@ interface CustodialWallet {
   createdAt: string;
 }
 
+interface TransactionHistoryProps {
+  createdAt: string | Date;
+  message: string;
+  sealed: boolean;
+  direction: "outgoing" | "incoming";
+  amountInEth: string;
+  transactionHash: string;
+  isInternal: boolean;
+  nickName?: string | null;
+}
+
+interface TransactionProps {
+  tx: TransactionHistoryProps;
+  chainId: number;
+  networkToEtherscanPrefix: (chainId: number) => string;
+}
+
 interface WalletTransactionHistoryProps {
   chainId: number;
   selectedWallet: CustodialWallet;
@@ -50,59 +67,77 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
     fetchTransactionHistory();
   }, [selectedWallet, interactionToggle, apiClient, chainId]);
 
+  const renderTransactionStatus = ({
+    tx,
+    chainId,
+    networkToEtherscanPrefix,
+  }: TransactionProps) => {
+    return (
+      <div
+        className={`flex flex-col space-y-2 p-4 border-b border-gray-200 w-full h-full ${
+          tx.isInternal ? "bg-green-100" : ""
+        }`}
+      >
+        <div className="flex-1">
+          <p className="text-xs text-gray-500">
+            {new Date(tx.createdAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            })}
+          </p>
+          <p className="font-semibold text-gray-800 truncate">{tx.message}</p>
+          <p
+            className={`text-xs ${
+              tx.sealed ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {tx.sealed ? "Sealed" : "Pending"}
+          </p>
+          {tx.nickName && (
+            <p className="text-xs text-gray-600">{`${
+              tx.direction === "outgoing" ? "to:" : "from:"
+            }: ${tx.nickName}`}</p>
+          )}
+        </div>
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-gray-800">
+            {tx.direction === "outgoing" ? "-" : "+"}
+            {tx.amountInEth} ETH
+          </p>
+          <a
+            href={`${networkToEtherscanPrefix(chainId)}${tx.transactionHash}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="View on Etherscan"
+          >
+            <Image
+              src="/icons/etherscan.svg"
+              alt="redirect"
+              width={24}
+              height={24}
+              className="w-6 h-6 cursor-pointer ml-2"
+            />
+          </a>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="w-full h-full bg-gray-100 flex items-center justify-center mt-2">
+    <div className="w-full h-full">
       {transactionHistory.length > 0 ? (
         <div className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
           {transactionHistory.map((tx, index) => (
             <div
               key={index}
-              className="flex items-center p-4 border-b border-gray-200"
+              className="flex items-stretch w-full border-b border-gray-200"
             >
-              <div className="flex-1">
-                <p className="text-xs text-gray-500">
-                  {new Date(tx.createdAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
-                </p>
-                <p className="font-semibold text-gray-800 truncate">
-                  {tx.message}
-                </p>
-                {tx.sealed ? (
-                  <p className="text-xs text-green-500">Sealed</p>
-                ) : (
-                  <p className="text-xs text-red-500">Pending</p>
-                )}
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-gray-800">
-                  {tx.from.toLowerCase() ===
-                  selectedWallet.address.toLowerCase()
-                    ? "-"
-                    : "+"}
-                  {tx.amountInEth} ETH
-                </p>
-                <a
-                  href={`${networkToEtherscanPrefix(chainId)}${
-                    tx.transactionHash
-                  }`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title={`${networkToEtherscanPrefix(chainId)}${
-                    tx.transactionHash
-                  }`}
-                >
-                  <Image
-                    src="/icons/etherscan.svg"
-                    alt="redirect"
-                    width={24}
-                    height={24}
-                    className="w-6 h-6 cursor-pointer ml-2"
-                  />
-                </a>
-              </div>
+              {renderTransactionStatus({
+                tx,
+                chainId,
+                networkToEtherscanPrefix,
+              })}
             </div>
           ))}
         </div>
