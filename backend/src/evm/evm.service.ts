@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Alchemy, Network, TransactionReceipt } from 'alchemy-sdk';
-import { sepolia, polygonAmoy, baseSepolia } from 'viem/chains';
+import { sepolia, baseSepolia } from 'viem/chains';
 import {
   InsufficientFundException,
   InvalidChainIdException,
