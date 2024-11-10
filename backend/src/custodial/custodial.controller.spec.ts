@@ -751,5 +751,53 @@ describe('CustodialController', () => {
 
       expect(res.body).toHaveLength(2);
     });
+
+    it('should mark internal transaction as internal and attach nickName if the counterpart is an internal wallet', async () => {
+      // Prep: Mock evmService.getTransactionHistory to return a valid transaction response with 1 transaction
+      // TODO: replace with lower-level mock on the EVMProvider if possible
+      jest.spyOn(evmService, 'getTransactionHistory').mockResolvedValue([
+        {
+          from: mockCustodialWalletAddress,
+          to: '0xOthers',
+          hash: '0xHash0',
+          nonce: '0',
+          value: '1000000000000000000', // 1 ETH in wei
+          timeStamp: new Date().getTime() / 1000,
+        },
+      ]);
+
+      // Prep: mock database has an internal transaction record for the sealed on-chain transaction
+      await prismaService.transactionHistory.create({
+        data: {
+          custodialWallet: {
+            connect: {
+              address: mockCustodialWalletAddress,
+            },
+          },
+          transactionHash: '0xHash0',
+          nonce: 0,
+          chainId: sepolia.id,
+          toAddress: '0xOther',
+          amountInEth: 0.01,
+          isInternal: true,
+          toCustodialWallet: {
+            connect: {
+              address: mockCustodialWalletAddress,
+            },
+          },
+        },
+      });
+
+      const res = await request(app.getHttpServer())
+        .get(
+          `/custodial/wallet/transactions/${sepolia.id}/${mockCustodialWalletAddress}`,
+        )
+        .expect(200);
+
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0]).toHaveProperty('isInternal', true);
+      expect(res.body[0]).toHaveProperty('nickName', 'Account 1');
+      expect(res.body[0]).toHaveProperty('direction', 'outgoing');
+    });
   });
 });
