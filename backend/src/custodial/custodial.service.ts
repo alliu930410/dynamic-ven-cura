@@ -190,6 +190,11 @@ export class CustodialService {
         amountInEth,
       );
 
+      const { isInternal, nickName, toWalletId } = await this.isInternalWallet(
+        dynamicUserId,
+        to,
+      );
+
       await this.prismaService.transactionHistory.create({
         data: {
           chainId,
@@ -197,11 +202,21 @@ export class CustodialService {
           amountInEth,
           transactionHash,
           nonce,
+          isInternal,
           custodialWallet: {
             connect: {
               address,
             },
           },
+          ...(isInternal
+            ? {
+                toCustodialWallet: {
+                  connect: {
+                    id: toWalletId,
+                  },
+                },
+              }
+            : {}),
         },
       });
 
@@ -279,7 +294,7 @@ export class CustodialService {
 
     // Serialize the transactions to only include necessary fields and limit to 100 transactions
     const onchainTransactions = transactions
-      .map((tx) => ({
+      .map((tx: any) => ({
         from: tx.from,
         to: tx.to,
         transactionHash: tx.hash,
@@ -320,11 +335,45 @@ export class CustodialService {
       nonce: tx.nonce,
       createdAt: tx.createdAt,
       amountInEth: tx.amountInEth,
+      isInternal: tx.isInternal,
       sealed: false,
     }));
 
     return [...serializedPendingTransactions, ...onchainTransactions].sort(
       (a, b) => b.createdAt - a.createdAt,
     );
+  }
+
+  /**
+   * Returns boolean indicating if the wallet is an internal wallet for the dynamic user
+   * @param dynamicUserId
+   * @param address
+   */
+  async isInternalWallet(
+    dynamicUserId: string,
+    address: string,
+  ): Promise<{
+    isInternal: boolean;
+    toWalletId?: number;
+    nickName?: string | null;
+  }> {
+    const wallet = await this.prismaService.custodialWallet.findFirst({
+      where: {
+        user: {
+          dynamicUserId,
+        },
+        address: {
+          equals: address,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      },
+    });
+
+    const insInternal = !!wallet;
+    return {
+      isInternal: insInternal,
+      nickName: insInternal ? wallet?.nickName : null,
+      toWalletId: insInternal ? wallet?.id : null,
+    };
   }
 }
