@@ -103,12 +103,7 @@ const DynamicApp = () => {
             key={walletItem.address}
             onClick={() => handleWalletSelect(walletItem)}
           >
-            <CustodialWalletItem
-              walletItem={walletItem}
-              chainId={chainId}
-              interactionToggle={interactionToggle}
-              selectedWallet={selectedWallet}
-            />
+            <CustodialWalletItem walletItem={walletItem} chainId={chainId} />
           </div>
         ))}
       </div>
