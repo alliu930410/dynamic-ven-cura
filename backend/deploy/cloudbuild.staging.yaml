@@ -21,25 +21,25 @@ steps:
         'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA',
       ]
 
-  # # Spinning up the test database
-  # - id: start-test-db
-  #   name: 'docker/compose:1.29.2'
-  #   args: ['-f', 'backend/docker-compose-ci.yml', 'up', '-d', 'db_test']
+  # Spinning up the test database
+  - id: start-test-db
+    name: 'docker/compose:1.29.2'
+    args: ['-f', 'backend/docker-compose-ci.yml', 'up', '-d', 'db_test']
 
-  # # Run unit tests
-  # - id: integration-tests
-  #   name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
-  #   args: ['test:ci']
-  #   env:
-  #     - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
-  #     - 'NODE_ENV_IS_CI=true'
-  #   waitFor: [docker-build, docker-push, start-test-db]
-  #   dir: /usr/src/app
+  # Run unit tests
+  - id: integration-tests
+    name: 'us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA'
+    args: ['test:ci']
+    env:
+      - 'DATABASE_URL=postgresql://postgres:postgres@ven_cura_test:5432/ven_cura?connect_timeout=300'
+      - 'NODE_ENV_IS_CI=true'
+    waitFor: [docker-build, docker-push, start-test-db]
+    dir: /usr/src/app
 
-  # # Spinning down the test database
-  # - id: stop-test-db
-  #   name: 'docker/compose:1.29.2'
-  #   args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
+  # Spinning down the test database
+  - id: stop-test-db
+    name: 'docker/compose:1.29.2'
+    args: ['-f', 'backend/docker-compose-ci.yml', 'down', '-d', 'db_test']
 
   # Run database migrations
   - id: run-db-migrations
@@ -48,29 +48,29 @@ steps:
     secretEnv: ['DATABASE_URL']
     dir: /usr/src/app
 
-  # # Deploy container image to Cloud Run, run migration, and start api server
-  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  #   entrypoint: gcloud
-  #   dir: /usr/src/app
-  #   args:
-  #     - run
-  #     - deploy
-  #     - ven-cura-backend
-  #     - --image
-  #     - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
-  #     - --args=start
-  #     - --region
-  #     - us-central1
-  #     - --port=3000
-  #     - --allow-unauthenticated
-  #     - >-
-  #       --set-secrets=
-  #       DATABASE_URL=DATABASE_URL:latest,
-  #       WALLET_ENCRYPTION_KEY=WALLET_ENCRYPTION_KEY:latest,
-  #       ALCHEMY_API_KEY=ALCHEMY_API_KEY:latest,
-  #       ETHERSCAN_API_KEY=ETHERSCAN_API_KEY:latest,
-  #       DYNAMIC_PUBLIC_KEY=DYNAMIC_PUBLIC_KEY:latest
-  #     - --set-cloudsql-instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura
+  # Deploy container image to Cloud Run, run migration, and start api server
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    dir: /usr/src/app
+    args:
+      - run
+      - deploy
+      - ven-cura-backend
+      - --image
+      - us-central1-docker.pkg.dev/crypto-the-zoo-staging/backend/$COMMIT_SHA
+      - --args=start:prod
+      - --region
+      - us-central1
+      - --port=3000
+      - --allow-unauthenticated
+      - >-
+        --set-secrets=
+        DATABASE_URL=DATABASE_URL:latest,
+        WALLET_ENCRYPTION_KEY=WALLET_ENCRYPTION_KEY:latest,
+        ALCHEMY_API_KEY=ALCHEMY_API_KEY:latest,
+        ETHERSCAN_API_KEY=ETHERSCAN_API_KEY:latest,
+        DYNAMIC_PUBLIC_KEY=DYNAMIC_PUBLIC_KEY:latest
+      - --set-cloudsql-instances=crypto-the-zoo-staging:us-central1:dynamic-ven-cura
 
 availableSecrets:
   secretManager:
