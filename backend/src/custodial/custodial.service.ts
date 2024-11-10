@@ -359,6 +359,7 @@ export class CustodialService {
           ],
         },
         include: {
+          custodialWallet: true,
           toCustodialWallet: true,
         },
       });
@@ -368,8 +369,13 @@ export class CustodialService {
         (dbTx) => dbTx.transactionHash === tx.transactionHash,
       );
 
+      const counterpartNickName =
+        tx.direction === 'incoming'
+          ? dbTx?.custodialWallet?.nickName
+          : dbTx?.toCustodialWallet?.nickName;
+
       tx.isInternal = dbTx?.isInternal || false;
-      tx.nickName = dbTx?.toCustodialWallet?.nickName;
+      tx.nickName = counterpartNickName;
     });
 
     // Fetch pending transactions from the database if transactionHash not in onchainTransactions
