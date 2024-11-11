@@ -4,8 +4,8 @@
 
 VenCura is a comprehensive custodial wallet platform for EVM (Ethereum Virtual Machine) networks, built to showcase secure wallet management and multi-chain compatibility within a modern Web3 application.
 
-![main](main.png)
-![side_panel](side_panel.png)
+![main](assets/main.png)
+![side_panel](assets/side_panel.png)
 
 This monorepo includes:
 
