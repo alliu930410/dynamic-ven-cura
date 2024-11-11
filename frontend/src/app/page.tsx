@@ -71,7 +71,9 @@ const DynamicApp = () => {
   const RefreshBalanceComponent = () => {
     const handleRefreshBalance = () => {
       if (!token) {
-        toast.error("Please log in first with Dynamic 😊");
+        toast.error("Please log in first with Dynamic 😊", {
+          position: "bottom-right",
+        });
         return;
       }
 
