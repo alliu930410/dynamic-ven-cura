@@ -59,7 +59,6 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
 
   return (
     <div className="w-full h-full p-4">
-      <h3 className="text-lg font-bold mb-4">{selectedWallet.nickName}</h3>
       <h3 className="text-lg font-bold mb-2">Sign A Message</h3>
 
       <input
