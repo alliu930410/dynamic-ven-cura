@@ -5,7 +5,7 @@ import { INestApplication } from '@nestjs/common';
 import { AppModule } from 'src/app.module';
 import * as jwt from 'jsonwebtoken';
 import { ethers, isAddress } from 'ethers';
-import { Alchemy, BigNumber } from 'alchemy-sdk';
+import { Alchemy } from 'alchemy-sdk';
 import { polygon, sepolia } from 'viem/chains';
 import { EVMService } from 'src/evm/evm.service';
 
