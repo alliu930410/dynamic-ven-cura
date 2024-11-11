@@ -257,7 +257,7 @@ export class CustodialService {
         nonce,
       };
     } catch (error) {
-      // TODO: add error handling
+      // TODO: add error handling if anything unexpected happens
       console.log('Error sending transaction', error);
       throw error;
     }

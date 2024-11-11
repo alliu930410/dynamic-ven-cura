@@ -3,6 +3,7 @@ import WalletTransactionHistory from "./WalletTransactionHistory";
 import WalletSignMessage from "./WalletSignMessage";
 import WalletSendTransaction from "./WalletSendTransaction";
 import Image from "next/image";
+import { trimContent } from "@/utils/helper";
 
 interface CustodialWallet {
   address: string;
@@ -73,6 +74,13 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
       <div className="flex p-2 justify-between">
         <SignMessageComponent />
         <SendTransactionComponent />
+      </div>
+
+      <div className="p-4">
+        <h3 className="text-lg font-bold">{selectedWallet.nickName}</h3>
+        <h3 className="text-lg font-bold">
+          {trimContent(selectedWallet.address, 18)}
+        </h3>
       </div>
 
       {activeOperation === "history" && (
