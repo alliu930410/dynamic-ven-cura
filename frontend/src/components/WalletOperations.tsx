@@ -1,6 +1,5 @@
 import { useState } from "react";
 import WalletTransactionHistory from "./WalletTransactionHistory";
-import { toast } from "react-toastify";
 import WalletSignMessage from "./WalletSignMessage";
 import WalletSendTransaction from "./WalletSendTransaction";
 import Image from "next/image";
