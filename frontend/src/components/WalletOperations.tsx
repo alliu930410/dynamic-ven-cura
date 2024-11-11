@@ -1,6 +1,5 @@
 import { useState } from "react";
 import WalletTransactionHistory from "./WalletTransactionHistory";
-import { toast } from "react-toastify";
 import WalletSignMessage from "./WalletSignMessage";
 import WalletSendTransaction from "./WalletSendTransaction";
 import Image from "next/image";
@@ -27,28 +26,6 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
   custodialWallets,
 }) => {
   const [activeOperation, setActiveOperation] = useState<string>("history");
-
-  const SelfCustodialComponent = () => {
-    const handleFetchPrivateKey = () => {
-      // TODO: hit API to get private key
-      toast.error("Haven't implemented yet");
-    };
-
-    return (
-      <div className="relative group" onClick={handleFetchPrivateKey}>
-        <Image
-          src="/icons/key.svg"
-          alt="key"
-          width={24}
-          height={24}
-          className="cursor-pointer"
-        />
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-          Non-custodial
-        </div>
-      </div>
-    );
-  };
 
   const SignMessageComponent = () => {
     return (
@@ -96,7 +73,6 @@ const WalletOperations: React.FC<WalletOperationsProps> = ({
       <div className="flex p-2 justify-between">
         <SignMessageComponent />
         <SendTransactionComponent />
-        <SelfCustodialComponent />
       </div>
 
       {activeOperation === "history" && (

@@ -69,7 +69,8 @@ This monorepo includes:
 1. Ensure the backend database and API are running (see above).
 2. Navigate to the frontend directory: `cd frontend`
 3. Install dependencies: `yarn`
-4. Start the frontend: `yarn dev`
+4. Create an `.env` file and add `NEXT_PUBLIC_API_URL=http://localhost:3000`
+5. Start the frontend: `yarn dev`
    - Access the frontend at [http://localhost:3003](http://localhost:3003)
 
 ## [Backend] Deployment to GCP (Google Cloud Platform) & CI/CD Pipeline
