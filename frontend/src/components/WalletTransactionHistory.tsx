@@ -62,7 +62,12 @@ const WalletTransactionHistory: React.FC<WalletTransactionHistoryProps> = ({
         );
         setTransactionHistory(response.data);
       } catch (error: any) {
-        toast.error("Error fetching data:", error);
+        toast.error(
+          `Error fetching transaction history: ${JSON.stringify(error)}`,
+          {
+            position: "bottom-right",
+          }
+        );
       }
     };
 

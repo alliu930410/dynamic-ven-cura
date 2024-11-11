@@ -26,12 +26,16 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
 
   const handleSignMessage = async () => {
     if (!message) {
-      toast.error("Please enter a message to sign");
+      toast.error("Please enter a message to sign", {
+        position: "bottom-right",
+      });
       return;
     }
 
     if (!selectedWallet?.address) {
-      toast.error("Unable to sign message without an address");
+      toast.error("Unable to sign message without an address", {
+        position: "bottom-right",
+      });
       return;
     }
 
@@ -42,17 +46,25 @@ const WalletSignMessage: React.FC<WalletSignMessageProps> = ({
       });
       setSignedMessage(response.data.signature);
       toast.success(
-        `Signed Message "${response.data.message}" with wallet ${response.data.address}`
+        `Signed Message "${response.data.message}" with wallet ${response.data.address}`,
+        {
+          position: "bottom-right",
+        }
       );
 
       setInteractionToggle(!interactionToggle);
     } catch (error: any) {
       if (error.response.status === 400 || error.response.status === 404) {
         toast.error(
-          `Error sending transaction: ${error.response.data.message}`
+          `Error sending transaction: ${error.response.data.message}`,
+          {
+            position: "bottom-right",
+          }
         );
       } else {
-        toast.error(`Error sending transaction: ${error}`);
+        toast.error(`Error sending transaction: ${error}`, {
+          position: "bottom-right",
+        });
       }
     }
   };

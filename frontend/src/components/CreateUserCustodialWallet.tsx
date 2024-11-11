@@ -17,18 +17,25 @@ const CreateCustodialWalletComponent: React.FC<CreateCustodialWalletProps> = ({
 
   const handleCreateCustodialWallet = async () => {
     if (!token) {
-      toast.error("Please log in first with Dynamic 😊");
+      toast.error("Please log in first with Dynamic 😊", {
+        position: "bottom-right",
+      });
       return;
     }
 
     try {
       const response = await apiClient.post("/custodial/wallet");
       toast.success(
-        `Created ${response.data.nickName}: ${response.data.address}`
+        `Created ${response.data.nickName}: ${response.data.address}`,
+        {
+          position: "bottom-right",
+        }
       );
       setInteractionToggle(!interactionToggle);
     } catch (error: any) {
-      toast.error(`Error creating custodial wallet: ${error}`);
+      toast.error(`Error creating custodial wallet: ${error}`, {
+        position: "bottom-right",
+      });
       console.error("Error creating wallet:", error);
     }
   };

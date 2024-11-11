@@ -39,7 +39,9 @@ const CustodialWalletItem: React.FC<CustodialWalletItemProps> = ({
         );
         setBalance(response.data.balance);
       } catch (error: any) {
-        toast.error(`Error fetching custodial wallets: ${error}`);
+        toast.error(`Error fetching custodial wallets: ${error}`, {
+          position: "bottom-right",
+        });
       }
     };
 

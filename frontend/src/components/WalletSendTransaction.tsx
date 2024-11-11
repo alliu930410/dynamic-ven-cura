@@ -40,22 +40,30 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
 
   const handleSendTransaction = async () => {
     if (!recipientAddress) {
-      toast.error("Missing recipient");
+      toast.error("Missing recipient", {
+        position: "bottom-right",
+      });
       return;
     }
 
     if (!isAddress(recipientAddress)) {
-      toast.error(`Invalid recipient address: ${recipientAddress}`);
+      toast.error(`Invalid recipient address: ${recipientAddress}`, {
+        position: "bottom-right",
+      });
       return;
     }
 
     if (Number(amount) == 0 || !amount) {
-      toast.error("Missing amount");
+      toast.error("Missing amount", {
+        position: "bottom-right",
+      });
       return;
     }
 
     if (!selectedWallet?.address) {
-      toast.error("Unable to send transaction without an address");
+      toast.error("Unable to send transaction without an address", {
+        position: "bottom-right",
+      });
       return;
     }
 
@@ -77,16 +85,24 @@ const WalletSendTransaction: React.FC<WalletSendTransactionProps> = ({
           chainIdToNativeTokenName[chainId]
         } with wallet ${response.data?.nickName || response.data.address} to ${
           response.data.to
-        }`
+        }`,
+        {
+          position: "bottom-right",
+        }
       );
       setInteractionToggle(!interactionToggle);
     } catch (error: any) {
       if (error.response.status === 400 || error.response.status === 404) {
         toast.error(
-          `Error sending transaction: ${error.response.data.message}`
+          `Error sending transaction: ${error.response.data.message}`,
+          {
+            position: "bottom-right",
+          }
         );
       } else {
-        toast.error(`Error sending transaction: ${error}`);
+        toast.error(`Error sending transaction: ${error}`, {
+          position: "bottom-right",
+        });
       }
     }
   };
