@@ -125,6 +125,37 @@ const DynamicApp = () => {
           setInteractionToggle={setInteractionToggle}
         />
         <RefreshBalanceComponent />
+        <div>
+          1. Click on "Create A Custodial Wallet" to create a custodial wallet.
+          (create multiple ones to test the in-between wallet transfer feature)
+        </div>
+        <div>
+          2. Click on a custodial wallet to expand the operations panel.
+        </div>
+        <div>3. Click the "Sign Message" icon to sign a message.</div>
+        <div>
+          4. Click the "Send Transaction" icon to send transactions. (Note:
+          You'll need testnet ETH to send a transaction. Use the Sepolia Faucet:
+          <a
+            href="https://www.alchemy.com/faucets/ethereum-sepolia"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://www.alchemy.com/faucets/ethereum-sepolia
+          </a>{" "}
+          or the Base Sepolia Faucet:
+          <a
+            href="https://www.alchemy.com/faucets/base-sepolia"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            https://www.alchemy.com/faucets/base-sepolia
+          </a>{" "}
+          to fund the wallet(s) to get started .)
+        </div>
+        <div>
+          5. Use the chain selector to switch to a different blockchain.
+        </div>
       </div>
 
       <div className="bg-white border border-gray-300 p-6 rounded-lg shadow-lg w-2/3 ml-6 space-y-6">
